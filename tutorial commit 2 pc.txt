@@ -1,0 +1,92 @@
+como commitar um repositório em 2 pc diferente
+O ChatGPT disse:
+Para comitar e trabalhar com um repositório Git em dois PCs diferentes, você só precisa garantir que seu repositório esteja em um serviço de hospedagem, como o GitHub, GitLab, ou Bitbucket. Assim, você pode sincronizar o repositório entre os dois PCs.
+
+Aqui está o passo a passo:
+
+1. Criar um repositório remoto (GitHub, GitLab, etc.):
+Se você ainda não tem um repositório remoto, crie um no GitHub (ou outro serviço de sua escolha).
+
+No GitHub: Crie um repositório em https://github.com.
+No GitLab: Crie um repositório em https://gitlab.com.
+Copie o link do repositório remoto (algo como https://github.com/usuario/repo.git).
+
+2. Configurar o repositório no primeiro PC:
+Se você ainda não tem o repositório local no primeiro PC, clone-o:
+
+bash
+Copiar
+Editar
+git clone https://github.com/usuario/repo.git
+Caso já tenha o repositório configurado, vá até o diretório do repositório:
+
+bash
+Copiar
+Editar
+cd /caminho/para/seu/repo
+Realize seu commit normalmente:
+
+Modifique os arquivos.
+
+Adicione as mudanças ao staging:
+
+bash
+Copiar
+Editar
+git add .
+Comite as mudanças:
+
+bash
+Copiar
+Editar
+git commit -m "Mensagem de commit"
+Envie as alterações para o repositório remoto:
+
+bash
+Copiar
+Editar
+git push origin main  # ou "master" dependendo do nome da branch
+3. Configurar o repositório no segundo PC:
+Agora, no segundo PC, clone o repositório, caso ainda não tenha feito isso:
+
+bash
+Copiar
+Editar
+git clone https://github.com/usuario/repo.git
+Se já tiver o repositório, entre no diretório do repositório:
+
+bash
+Copiar
+Editar
+cd /caminho/para/seu/repo
+4. Sincronizar mudanças no segundo PC:
+No segundo PC, faça um git pull para obter as últimas alterações do repositório remoto:
+
+bash
+Copiar
+Editar
+git pull origin main  # ou "master", dependendo da branch
+Agora, você pode modificar os arquivos, fazer commits e enviar alterações normalmente.
+
+5. Comitar no segundo PC:
+No segundo PC, após modificar os arquivos, siga o mesmo processo para adicionar, comitar e enviar as mudanças:
+
+bash
+Copiar
+Editar
+git add .
+git commit -m "Mensagem de commit"
+git push origin main  # ou "master"
+6. Voltar ao primeiro PC:
+No primeiro PC, para obter as mudanças mais recentes, faça um git pull:
+
+bash
+Copiar
+Editar
+git pull origin main  # ou "master"
+Resumo:
+No primeiro PC, faça as mudanças e faça o git push.
+No segundo PC, use git pull para obter as mudanças.
+No segundo PC, faça as mudanças e faça o git push.
+No primeiro PC, faça git pull novamente para obter as últimas alterações.
+Dessa forma, você pode manter os dois PCs sincronizados com o repositório remoto!

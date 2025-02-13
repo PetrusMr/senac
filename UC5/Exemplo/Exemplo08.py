@@ -25,7 +25,7 @@ frame03 = CTkFrame(master=root, width=300, height=300, corner_radius= 0, fg_colo
 btn1 = CTkButton(master=frame01, text='Botao 1', command= frame2 )
 btn1.pack(pady=5)
 
-btn2 = CTkButton(master=frame01, text='Botao 2', command= frame03 )
+btn2 = CTkButton(master=frame01, text='Botao 2', command= frame3 )
 btn2.pack()
 
 root.mainloop()
