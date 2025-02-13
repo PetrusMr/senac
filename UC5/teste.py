@@ -91,7 +91,7 @@ btn_relatorio = CTkButton(master=frame_lateral, text='Relatorio', corner_radius=
 btn_relatorio.pack()
 
 
-# frame cadastrar
+# #frame cadastrar
 
 # label
 label_Cadrastro_produto = CTkLabel(master=frame_cadastrar, text='Cadastro de Produto', font=('Arial', 30),)
