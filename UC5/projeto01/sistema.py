@@ -8,6 +8,8 @@ def switch_cadastrar():
     frame_cadastrar.grid(row = 0, column = 1, padx = 5)
     frame_cadastrar.grid_propagate(False)
 
+ 
+
 def switch_editar():
     frame_cadastrar.grid_forget()
     frame_saida.grid_forget()

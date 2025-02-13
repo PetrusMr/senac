@@ -1,0 +1,19 @@
+editar
+	-buscar produto
+	-alterar nome
+	-alterar preço
+	-alterar descrição
+	-salvar
+
+
+
+
+saida
+
+
+
+entrada
+
+
+relatorio
+
