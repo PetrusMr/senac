@@ -5,15 +5,18 @@ editar
 	-alterar descrição
 	-salvar
 
-
-
-
 saida
-
-
+	-Baixa automática no estoque
+	-Motivo da saída
 
 entrada
+	-Reabastecimento
+	-Aumento da quantidade
+
 
 
 relatorio
-
+	-resumo do estoque
+	-historico de movimento
+	-produtos em baixa
+	-movimentação
