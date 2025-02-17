@@ -52,20 +52,20 @@ frame_lateral = CTkFrame(master=root, width=190, height=390, border_color='#d9d4
 frame_lateral.pack_propagate(False)
 frame_lateral.grid(row = 0, column = 0, padx=10)
 
-frame_cadastrar = CTkFrame(master=root, width= 590, height=390, border_color='#d9d4fd', border_width=2)
+frame_cadastrar = CTkFrame(master=root, width= 600, height=390, border_color='#d9d4fd', border_width=2)
 frame_cadastrar.grid_propagate(False)
 
 
-frame_editar = CTkFrame(master=root, width= 590, height=390, border_color='#d9d4fd', border_width=2)
+frame_editar = CTkFrame(master=root, width= 600, height=390, border_color='#d9d4fd', border_width=2)
 frame_editar.grid_propagate(False)
 
-frame_saida = CTkFrame(master=root, width= 590, height=390, border_color='#d9d4fd', border_width=2)
+frame_saida = CTkFrame(master=root, width= 600, height=390, border_color='#d9d4fd', border_width=2)
 frame_saida.grid_propagate(False)
 
-frame_entrada = CTkFrame(master=root, width= 590, height=390, border_color='#d9d4fd', border_width=2)
+frame_entrada = CTkFrame(master=root, width= 600, height=390, border_color='#d9d4fd', border_width=2)
 frame_entrada.grid_propagate(False)
 
-frame_relatorio = CTkFrame(master=root, width= 590, height=390, border_color='#d9d4fd', border_width=2)
+frame_relatorio = CTkFrame(master=root, width= 600, height=390, border_color='#d9d4fd', border_width=2)
 frame_relatorio.grid_propagate(False)
 
 # frame_lateral widget
@@ -116,7 +116,7 @@ entry_preco.grid(row=2, column=1, sticky='w')
 
 # textbox
 
-descricao_box = CTkTextbox(master=frame_cadastrar, width=300, height=80,border_color='#a399f9', border_width=2, corner_radius=15)
+descricao_box = CTkTextbox(master=frame_cadastrar, width=300, height=80,border_color='#a399f9', border_width=2, corner_radius=15, scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#6e67a6')
 descricao_box.grid(row=3, column=1, sticky='w',pady=12)
 
 # butao
@@ -133,7 +133,7 @@ label_Editar.grid(row = 0, column = 0, pady=5, padx= 250,sticky='w',columnspan=4
 
 
 #scrollframe
-scroll_frame_edit = CTkScrollableFrame(master=frame_editar, corner_radius=32, border_color='#a399f9', border_width=2, scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#a399f9')
+scroll_frame_edit = CTkScrollableFrame(master=frame_editar, corner_radius=32, border_color='#a399f9', border_width=2, scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78')
 scroll_frame_edit.grid(row= 2, column=0, sticky='w',rowspan = 4, padx= 30)
 
 
@@ -148,28 +148,39 @@ entry_preco_edit = CTkEntry(master=frame_editar, placeholder_text='R$:', width=8
 entry_preco_edit.grid(row=3, column = 1, sticky  = 'nw',)
 
 
-textbox_edit = CTkTextbox(master=frame_editar,height=150, width=280, border_color='#a399f9', border_width=2, corner_radius=15)
-textbox_edit.grid(row=4, column = 1, sticky ='w', pady=5)
+textbox_edit = CTkTextbox(master=frame_editar,height=150, width=280, border_color='#a399f9', border_width=2, corner_radius=15, scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#6e67a6')
+textbox_edit.grid(row=4, column = 1, sticky ='w', pady=5,)
 
 
 # butao
 
-btn_salvar_edit = CTkButton(master=frame_editar, text= 'salvar', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_salvar_edit = CTkButton(master=frame_editar, text= 'Salvar', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
 btn_salvar_edit.grid(row=5, column=1,pady=5, sticky='e')
 
 btn_excluir_edit = CTkButton(master=frame_editar, text='Excluir', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
-btn_excluir_edit.grid(row=5, column=1,pady=5, sticky='n')
+btn_excluir_edit.grid(row=5, column=1,pady=5, )
 
 btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
 btn_cancelar_edit.grid(row=5, column=1,pady=5, sticky='w')
 
 # # temporario ---------------
-items = ["Item 1", "Item 2", "Item 3", "Item 4","Item 1", "Item 2", "Item 3", "Item 4"]
+nomes = [
+    "Sakura",
+    "Yuki",
+    "Hana",
+    "Aiko",
+    "Miyuki",
+    "Emi",
+    "Haruka",
+    "Naomi",
+    "Reina",
+    "Kaori"
+]
 # #-----------------------------
 
 
-for item in items:
-   box = CTkCheckBox(master=scroll_frame_edit, text=item,)
+for item in nomes:
+   box = CTkCheckBox(master=scroll_frame_edit, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
    box.pack(pady=5, padx=10, fill="x")
 
 
@@ -179,7 +190,7 @@ for item in items:
 
 # Label
 label_Saida = CTkLabel(master=frame_saida, text='Saida', font=('Arial', 30),)
-label_Saida.grid(row = 0, column = 1, pady=30)
+label_Saida.grid(row = 0, column = 1, pady=30, )
 
 
 # frame entrada
