@@ -8,7 +8,6 @@ def switch_cadastrar():
     frame_cadastrar.grid(row = 0, column = 1, padx = 5)
     frame_cadastrar.grid_propagate(False)
 
- 
 
 def switch_editar():
     frame_cadastrar.grid_forget()
@@ -17,6 +16,7 @@ def switch_editar():
     frame_relatorio.grid_forget()
     frame_editar.grid(row = 0, column = 1, padx = 5)
     frame_editar.grid_propagate(False)
+ 
 
 def switch_saida():
     frame_cadastrar.grid_forget()
@@ -44,7 +44,7 @@ def switch_relatorio():
     frame_relatorio.grid_propagate(False)
 
 root = CTk()
-root.geometry('820x400')
+root.geometry('840x400')
 root.title('Sistema de gerenciamento')
 
 # frame
@@ -91,7 +91,7 @@ btn_relatorio = CTkButton(master=frame_lateral, text='Relatorio', corner_radius=
 btn_relatorio.pack()
 
 
-# frame cadastrar
+# #frame cadastrar
 
 # label
 label_Cadrastro_produto = CTkLabel(master=frame_cadastrar, text='Cadastro de Produto', font=('Arial', 30),)
@@ -128,8 +128,50 @@ btn_salvar.grid(row=4, column=1, pady=5,sticky='e')
 # frame editar
 
 # Label
-label_Editar = CTkLabel(master=frame_editar, text='Editar', font=('Arial', 30),)
-label_Editar.grid(row = 0, column = 1, pady=30)
+label_Editar = CTkLabel(master=frame_editar, text='Editar', font=('Arial', 30))
+label_Editar.grid(row = 0, column = 0, pady=5, padx= 250,sticky='w',columnspan=4)
+
+
+#scrollframe
+scroll_frame_edit = CTkScrollableFrame(master=frame_editar, corner_radius=32, border_color='#a399f9', border_width=2, scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#a399f9')
+scroll_frame_edit.grid(row= 2, column=0, sticky='w',rowspan = 4, padx= 30)
+
+
+# entry
+entry_busca_edit = CTkEntry(master=frame_editar, placeholder_text='Buscar Produto', width=400, border_color='#a399f9', corner_radius=32)
+entry_busca_edit.grid(row=1, column = 0, pady= 5, padx=30, sticky  = 'w',columnspan=3)
+
+entry_nome_edit = CTkEntry(master=frame_editar, placeholder_text='Nome do Produto', width=250, border_color='#a399f9', corner_radius=32)
+entry_nome_edit.grid(row=2, column = 1,  sticky  = 'w', pady=5 )
+
+entry_preco_edit = CTkEntry(master=frame_editar, placeholder_text='R$:', width=80, border_color='#a399f9', corner_radius=32)
+entry_preco_edit.grid(row=3, column = 1, sticky  = 'nw',)
+
+
+textbox_edit = CTkTextbox(master=frame_editar,height=150, width=280, border_color='#a399f9', border_width=2, corner_radius=15)
+textbox_edit.grid(row=4, column = 1, sticky ='w', pady=5)
+
+
+# butao
+
+btn_salvar_edit = CTkButton(master=frame_editar, text= 'salvar', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_salvar_edit.grid(row=5, column=1,pady=5, sticky='e')
+
+btn_excluir_edit = CTkButton(master=frame_editar, text='Excluir', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_excluir_edit.grid(row=5, column=1,pady=5, sticky='n')
+
+btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_cancelar_edit.grid(row=5, column=1,pady=5, sticky='w')
+
+# # temporario ---------------
+items = ["Item 1", "Item 2", "Item 3", "Item 4","Item 1", "Item 2", "Item 3", "Item 4"]
+# #-----------------------------
+
+
+for item in items:
+   box = CTkCheckBox(master=scroll_frame_edit, text=item,)
+   box.pack(pady=5, padx=10, fill="x")
+
 
 
 
