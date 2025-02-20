@@ -235,7 +235,7 @@ itens_saida2 = ["Item 1", "Item 2", "Item 3"]
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
 scroll_frame_saida_prod.grid(row= 3, column= 1)
 
-for item in itens_saida2:  
+for item in enumerate (itens_saida2):  
     botao_remover_sair = CTkButton(master=scroll_frame_saida_prod, text="", image=image1, width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
     botao_remover_sair.grid(row=1, column=1, pady=2, padx=70, sticky='w')
 
