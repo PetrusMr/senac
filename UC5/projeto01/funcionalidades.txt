@@ -6,8 +6,11 @@ editar
 	-salvar
 
 saida
-	-Baixa automática no estoque
-	-Motivo da saída
+	-Venda de produtos: 
+	-Transferência de produtos:
+	-Devoluções:
+	-Baixa de produtos: 
+
 
 entrada
 	-Reabastecimento
