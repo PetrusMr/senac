@@ -235,7 +235,7 @@ for item in nomes:
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
 scroll_frame_saida_prod.grid(row= 3, column= 1)
 
-# frame entrada
+# frame entrada0--
 
 # label
 label_Entrada = CTkLabel(master=frame_entrada, text='Entrada', font=('Arial', 30),)

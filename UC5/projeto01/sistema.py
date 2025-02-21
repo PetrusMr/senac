@@ -48,6 +48,27 @@ def switch_relatorio():
     frame_relatorio.grid(row = 0, column = 1, padx = 5)
     frame_relatorio.grid_propagate(False)
 
+def delete_itens(linhas, botoes):
+    linhas.grid_forget()
+    botoes.grid_forget()
+
+ 
+linha = 0
+def adicionar_item():  
+    global linha
+    item_vet = str(entry_qntd_tirar_saida.get())
+    linha += 1
+ 
+    if item_vet in nomes:    
+        try :  
+            label = CTkLabel(scroll_frame_saida_prod, text=item_vet, anchor="w")            
+            label.grid(row=linha, column=0, pady=5, padx=5)    
+            lixeira = CTkButton(scroll_frame_saida_prod, width=35, height=35, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+            lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
+ 
+        except ValueError:
+            return  
+
 root = CTk()
 root.geometry('840x400')
 root.title('Sistema de gerenciamento')
@@ -212,9 +233,6 @@ entry_buscar_saida.grid(row= 1, column = 0, padx = 10)
 entry_NomeProd_saida = CTkEntry(master=frame_saida, state= 'disabled' )
 entry_NomeProd_saida.grid(row = 1, column = 1, sticky = 'w',)
 
-entry_qntdProd_saida = CTkEntry(master=frame_saida, width=70,  state= 'disabled' )
-entry_qntdProd_saida.grid(row = 1, column = 1, padx=80)
-
 entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para tirar', width=120)
 entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w')
 
@@ -235,16 +253,11 @@ itens_saida2 = ["Item 1", "Item 2", "Item 3"]
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
 scroll_frame_saida_prod.grid(row= 3, column= 1)
 
-for item in enumerate (itens_saida2):  
-    botao_remover_sair = CTkButton(master=scroll_frame_saida_prod, text="", image=image1, width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
-    botao_remover_sair.grid(row=1, column=1, pady=2, padx=70, sticky='w')
 
-    label_item_sair =CTkLabel(master=scroll_frame_saida_prod, text=item , width=50, fg_color="#8684EB")
-    label_item_sair.grid(row=1, column=0, pady=2, padx=5)
 
 # butao
 
-btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
+btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', command=adicionar_item)
 btn_adicionarItem_saida.grid(row = 2, column= 1, sticky='e',) 
 
 btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
