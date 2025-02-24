@@ -62,7 +62,7 @@ def adicionar_item_saida():
     if item_vet in nomes:    
         try :  
             label = CTkLabel(scroll_frame_saida_prod, text=item_vet, anchor="w")            
-            label.grid(row=linha, column=0, pady=5, padx=5)    
+            label.grid(row=linha, column=0, pady=5, padx=5, sticky='w')    
             lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
  
@@ -78,7 +78,7 @@ def adicionar_item_entrada():
     if item_vet in nomes:    
         try :  
             label = CTkLabel(scroll_frame_entrada_prod, text=item_vet, anchor="w")            
-            label.grid(row=linha, column=0, pady=5, padx=5)    
+            label.grid(row=linha, column=0, pady=5, padx=5, sticky = 'w')    
             lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
  
@@ -266,7 +266,7 @@ for item in nomes:
 # ------------------------------------
 
 
-scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
+scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78',)
 scroll_frame_saida_prod.grid(row= 3, column= 1)
 
 
