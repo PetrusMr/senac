@@ -3,7 +3,7 @@ from customtkinter import *
 
 import os
 file_path = os.path.dirname(os.path.realpath(__file__))
-image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(35,35))
+image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
 
 def switch_cadastrar():
     frame_editar.grid_forget()
@@ -54,7 +54,7 @@ def delete_itens(linhas, botoes):
 
  
 linha = 0
-def adicionar_item():  
+def adicionar_item_saida():  
     global linha
     item_vet = str(entry_qntd_tirar_saida.get())
     linha += 1
@@ -63,11 +63,27 @@ def adicionar_item():
         try :  
             label = CTkLabel(scroll_frame_saida_prod, text=item_vet, anchor="w")            
             label.grid(row=linha, column=0, pady=5, padx=5)    
-            lixeira = CTkButton(scroll_frame_saida_prod, width=35, height=35, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+            lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
  
         except ValueError:
             return  
+        
+
+def adicionar_item_entrada():  
+    global linha
+    item_vet = str(entry_qntd_tirar_entrada.get())
+    linha += 1
+ 
+    if item_vet in nomes:    
+        try :  
+            label = CTkLabel(scroll_frame_entrada_prod, text=item_vet, anchor="w")            
+            label.grid(row=linha, column=0, pady=5, padx=5)    
+            lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+            lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
+ 
+        except ValueError:
+            return
 
 root = CTk()
 root.geometry('840x400')
@@ -206,8 +222,8 @@ nomes = [
 
 # checkbox
 for item in nomes:
-   box = CTkCheckBox(master=scroll_frame_edit, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
-   box.pack(pady=5, padx=10, fill="x")
+   box_edit = CTkCheckBox(master=scroll_frame_edit, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
+   box_edit.pack(pady=5, padx=10, fill="x")
 
 
 
@@ -227,14 +243,14 @@ scroll_frame_saida.grid(row= 2, column= 0, rowspan= 4, padx=10)
 
 
 # entry
-entry_buscar_saida = CTkEntry(master=frame_saida,)
-entry_buscar_saida.grid(row= 1, column = 0, padx = 10)
+entry_buscar_saida = CTkEntry(master=frame_saida, width=219, )
+entry_buscar_saida.grid(row= 1, column = 0, padx = 30, sticky='w')
 
 entry_NomeProd_saida = CTkEntry(master=frame_saida, state= 'disabled' )
-entry_NomeProd_saida.grid(row = 1, column = 1, sticky = 'w',)
+entry_NomeProd_saida.grid(row = 1, column = 1, sticky = 'w', padx = 5)
 
-entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para tirar', width=120)
-entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w')
+entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para -', width=120)
+entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w', padx=5)
 
 
 
@@ -244,11 +260,11 @@ entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w')
 
 # -------------temporario--------------
 for item in nomes:
-   box = CTkCheckBox(master=scroll_frame_saida, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
-   box.pack(pady=5, padx=10, fill="x")
+   box_saida = CTkCheckBox(master=scroll_frame_saida, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
+   box_saida.pack(pady=5, padx=10, fill="x")
 
 # ------------------------------------
-itens_saida2 = ["Item 1", "Item 2", "Item 3"]
+
 
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
 scroll_frame_saida_prod.grid(row= 3, column= 1)
@@ -257,19 +273,66 @@ scroll_frame_saida_prod.grid(row= 3, column= 1)
 
 # butao
 
-btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', command=adicionar_item)
-btn_adicionarItem_saida.grid(row = 2, column= 1, sticky='e',) 
+btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', command=adicionar_item_saida)
+btn_adicionarItem_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
 btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
 btn_salvar_sair.grid(row = 5, column= 1, sticky='e')
 
-btn_salvar_cancelar = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
-btn_salvar_cancelar.grid(row = 5, column= 1, sticky='w')
+btn_salvar_cancelar_saida = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
+btn_salvar_cancelar_saida.grid(row = 5, column= 1, sticky='w', pady=5)
+
+
 # frame entrada
 
 # label
-label_Entrada = CTkLabel(master=frame_entrada, text='Entrada', font=('Arial', 30),)
-label_Entrada.grid(row = 0, column = 1, pady=30)
+label_Entrada = CTkLabel(master=frame_entrada, text='Entrada', font=('Arial', 20),)
+label_Entrada.grid(row = 0, column = 0, pady=5, padx= 237,sticky='w',columnspan=4)
+
+# scrollframe
+
+scroll_frame_entrada = CTkScrollableFrame(master=frame_entrada , border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78')
+scroll_frame_entrada.grid(row= 2, column= 0, rowspan= 4, padx=10)
+
+
+# entry
+entry_buscar_entrada = CTkEntry(master=frame_entrada,width=219)
+entry_buscar_entrada.grid(row= 1, column = 0, padx = 20, sticky = 'w')
+
+entry_NomeProd_entrada = CTkEntry(master=frame_entrada, state= 'disabled' )
+entry_NomeProd_entrada.grid(row = 1, column = 1, sticky = 'w', padx=5)
+
+entry_qntd_tirar_entrada = CTkEntry(master=frame_entrada, placeholder_text='Qtnd para +', width=120)
+entry_qntd_tirar_entrada.grid(row = 2, column = 1, sticky = 'w', padx= 5)
+
+
+
+# checkbox
+
+# -------------temporario--------------
+for item in nomes:
+   box_entrada = CTkCheckBox(master=scroll_frame_entrada, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
+   box_entrada.pack(pady=5, padx=10, fill="x")
+
+# ------------------------------------
+
+scroll_frame_entrada_prod = CTkScrollableFrame(master= frame_entrada, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
+scroll_frame_entrada_prod.grid(row= 3, column= 1)
+
+
+
+# butao
+
+btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', command=adicionar_item_entrada)
+btn_adicionarItem_entrada.grid(row = 2, column= 1, sticky='e',pady=5,) 
+
+btn_salvar_entrada = CTkButton(master=frame_entrada, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
+btn_salvar_entrada.grid(row = 5, column= 1, sticky='e')
+
+btn_salvar_cancelar_entrada = CTkButton(master=frame_entrada, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', )
+btn_salvar_cancelar_entrada.grid(row = 5, column= 1, sticky='w', pady=5, padx=5)
+
+
 
 
 # frame relatorio
