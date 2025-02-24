@@ -243,13 +243,13 @@ scroll_frame_saida.grid(row= 2, column= 0, rowspan= 4, padx=10)
 
 
 # entry
-entry_buscar_saida = CTkEntry(master=frame_saida, width=219, )
+entry_buscar_saida = CTkEntry(master=frame_saida, width=219, border_color='#a399f9', corner_radius=32)
 entry_buscar_saida.grid(row= 1, column = 0, padx = 30, sticky='w')
 
-entry_NomeProd_saida = CTkEntry(master=frame_saida, state= 'disabled' )
+entry_NomeProd_saida = CTkEntry(master=frame_saida, state= 'disabled', border_color='#a399f9', corner_radius=32 )
 entry_NomeProd_saida.grid(row = 1, column = 1, sticky = 'w', padx = 5)
 
-entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para -', width=120)
+entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para -', width=120, border_color='#a399f9', corner_radius=32)
 entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w', padx=5)
 
 
@@ -296,13 +296,13 @@ scroll_frame_entrada.grid(row= 2, column= 0, rowspan= 4, padx=10)
 
 
 # entry
-entry_buscar_entrada = CTkEntry(master=frame_entrada,width=219)
+entry_buscar_entrada = CTkEntry(master=frame_entrada,width=219, border_color='#a399f9', corner_radius=32)
 entry_buscar_entrada.grid(row= 1, column = 0, padx = 20, sticky = 'w')
 
-entry_NomeProd_entrada = CTkEntry(master=frame_entrada, state= 'disabled' )
+entry_NomeProd_entrada = CTkEntry(master=frame_entrada, state= 'disabled', border_color='#a399f9', corner_radius=32 )
 entry_NomeProd_entrada.grid(row = 1, column = 1, sticky = 'w', padx=5)
 
-entry_qntd_tirar_entrada = CTkEntry(master=frame_entrada, placeholder_text='Qtnd para +', width=120)
+entry_qntd_tirar_entrada = CTkEntry(master=frame_entrada, placeholder_text='Qtnd para +', width=120, border_color='#a399f9', corner_radius=32)
 entry_qntd_tirar_entrada.grid(row = 2, column = 1, sticky = 'w', padx= 5)
 
 
