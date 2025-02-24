@@ -273,13 +273,13 @@ scroll_frame_saida_prod.grid(row= 3, column= 1)
 
 # butao
 
-btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', command=adicionar_item_saida)
+btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida)
 btn_adicionarItem_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
-btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
+btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black')
 btn_salvar_sair.grid(row = 5, column= 1, sticky='e')
 
-btn_salvar_cancelar_saida = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
+btn_salvar_cancelar_saida = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
 btn_salvar_cancelar_saida.grid(row = 5, column= 1, sticky='w', pady=5)
 
 
@@ -323,13 +323,13 @@ scroll_frame_entrada_prod.grid(row= 3, column= 1)
 
 # butao
 
-btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', command=adicionar_item_entrada)
+btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_entrada)
 btn_adicionarItem_entrada.grid(row = 2, column= 1, sticky='e',pady=5,) 
 
-btn_salvar_entrada = CTkButton(master=frame_entrada, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6')
+btn_salvar_entrada = CTkButton(master=frame_entrada, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
 btn_salvar_entrada.grid(row = 5, column= 1, sticky='e')
 
-btn_salvar_cancelar_entrada = CTkButton(master=frame_entrada, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', )
+btn_salvar_cancelar_entrada = CTkButton(master=frame_entrada, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black' )
 btn_salvar_cancelar_entrada.grid(row = 5, column= 1, sticky='w', pady=5, padx=5)
 
 
