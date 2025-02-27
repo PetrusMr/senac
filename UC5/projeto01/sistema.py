@@ -1,4 +1,4 @@
-from PIL import Image, ImageTk
+from PIL import Image
 from customtkinter import *
 
 import os
