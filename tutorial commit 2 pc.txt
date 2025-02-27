@@ -90,3 +90,31 @@ No segundo PC, use git pull para obter as mudanças.
 No segundo PC, faça as mudanças e faça o git push.
 No primeiro PC, faça git pull novamente para obter as últimas alterações.
 Dessa forma, você pode manter os dois PCs sincronizados com o repositório remoto!
+
+
+
+
+---------------------erro----------------------
+erro commit pushando oq n deve
+
+criar um arquivo chamado .gitignore e colar isso dentro(trocar toda as pastas 'com "/"dentro' por as suas)
+
+echo "__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+login
+login/
+login/Lib/
+venv/
+env/
+*/Scripts/
+*/bin/
+login/Lib/site-packages/" > .gitignore
+
+
+usar o seguinte comando finalizando apos o cached com oq quer, exp: vscode
+
+ git rm -r --cached 
