@@ -19,7 +19,9 @@ entrada
 
 
 relatorio
+
+	-produtos adicionados
+	-produtos editados
 	-resumo do estoque
-	-historico de movimento
-	-produtos em baixa
-	-movimentação
+	-historico de saida
+	-historico de entrada

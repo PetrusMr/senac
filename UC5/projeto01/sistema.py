@@ -1,9 +1,13 @@
-from PIL import Image, ImageTk
+from PIL import Image
 from customtkinter import *
+from tkinter import ttk
+
 
 import os
 file_path = os.path.dirname(os.path.realpath(__file__))
 image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
+
+set_appearance_mode("dark")
 
 def switch_cadastrar():
     frame_editar.grid_forget()
@@ -84,11 +88,54 @@ def adicionar_item_entrada():
  
         except ValueError:
             return
+        
+def export():
+    root_export = CTkToplevel()
+    root_export.geometry('600x400')
+    root_export.title('')
+    root_export.attributes('-topmost',True)
+
+    # frame
+    frame_root_2 = CTkFrame(master=root_export, width=500, height=300)
+    frame_root_2.pack(anchor='center')
+    frame_root_2.grid_propagate(False)
+
+
+    # label
+    escolher_relatorio = CTkLabel(master=frame_root_2, text='Escolher Relatorio(s)')
+    escolher_relatorio.grid(row=0, column=0, pady=10)
+
+    Escolher_extensao = CTkLabel(master=frame_root_2, text='Escolher extensão')
+    Escolher_extensao.grid(row=0, column=1, pady=10)
+
+
+
+    # checkbox
+    exportar_estoque_r2 = CTkCheckBox(master=frame_root_2, text='Exportar estoque').grid(row=1, column=0, sticky='w')
+    exportar_saida_r2 = CTkCheckBox(master=frame_root_2, text='Exportar saida').grid(row=2, column=0, sticky='w')
+    exportar_entrada_r2 = CTkCheckBox(master=frame_root_2, text='Exportar entrada').grid(row=3, column=0, sticky='w', )
+    word_r2 = CTkCheckBox(master=frame_root_2, text='WORD').grid(row=1, column=1, sticky='e',padx='50')
+    pdf_r2 = CTkCheckBox(master=frame_root_2, text='PDF').grid(row=2, column=1, sticky='e',padx='50')
+    excel_r2 = CTkCheckBox(master=frame_root_2, text='EXCEL').grid(row=3, column=1, sticky='e',padx='50')
+    
+    
+    # button
+    btn_save_frame_root_2 = CTkButton(master=frame_root_2, text='SALVAR', width=70)
+    btn_save_frame_root_2.grid(row=4, column=1,padx=80)
+
+    btn_cancel_frame_root_2 = CTkButton(master=frame_root_2, text='CANCELAR', width=70)
+    btn_cancel_frame_root_2.grid(row=4, column=1, sticky='e')
 
 root = CTk()
 root.geometry('840x400')
 root.title('Sistema de gerenciamento')
 
+style = ttk.Style(master=root)
+style.theme_use('clam')
+style.configure("Treeview", background="#3484F0", fieldbackground="#565b5e", foreground="white",rowheight=25,bordercolor="#343638",)
+
+style.configure("Treeview.Heading",background="#565b5e",foreground="white",relief="flat")
+style.map("Treeview.Heading",background=[('active', '#3484F0')])
 # frame
 frame_lateral = CTkFrame(master=root, width=190, height=390, border_color='#d9d4fd', border_width=2)
 frame_lateral.pack_propagate(False)
@@ -338,8 +385,45 @@ btn_salvar_cancelar_entrada.grid(row = 5, column= 1, sticky='w', pady=5, padx=5)
 # frame relatorio
 
 # label
-label_Relatorio = CTkLabel(master=frame_relatorio, text='Relatorio', font=('Arial', 30),)
-label_Relatorio.grid(row = 0, column = 1, pady=30)
+label_Relatorio = CTkLabel(master=frame_relatorio, text='Relatorio estoque', font=('Arial', 20),)
+label_Relatorio.grid(row = 0, column = 0, pady=10,padx = 20 , sticky='e')
+
+entry_busca_relatorio_estoque = CTkEntry(master=frame_relatorio, placeholder_text='Buscar Produto', width=200, border_color='#a399f9', corner_radius=32)
+entry_busca_relatorio_estoque.grid(row=1, column = 0, padx=30, sticky  = 'w')
+
+# treeview
+
+columns = ('nome', 'quantidade', 'preço', 'descricao')
+
+estoque_tree = ttk.Treeview(master=frame_relatorio, columns=columns, show='headings', )
+estoque_tree.grid(row=2, column=0, columnspan=4)
+
+estoque_tree.heading('nome', text='nome')
+estoque_tree.heading('quantidade', text='quantidade')
+estoque_tree.heading('preço', text='preço')
+estoque_tree.heading('descricao', text='descricao')
+
+estoque_tree.column('nome',width=110 )
+estoque_tree.column('quantidade',width=110 )
+estoque_tree.column('preço',width=110 )
+estoque_tree.column('descricao',width=110 )
+
+
+# button
+btn_exportar_relatorio = CTkButton(master=frame_relatorio, text='Exportar', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=export)
+btn_exportar_relatorio.grid(row = 1, column= 2, sticky='w',pady=5, )
+
+btn_estoque_relatorio = CTkButton(master=frame_relatorio, text='Estoque', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+btn_estoque_relatorio.grid(row = 3, column= 1,pady=5,sticky='w' )
+
+btn_entrada_relatorio = CTkButton(master=frame_relatorio, text='Entrada', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+btn_entrada_relatorio.grid(row = 3, column= 1,pady=5, padx=80  )
+
+btn_saida_relatorio = CTkButton(master=frame_relatorio, text='Saida', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+btn_saida_relatorio.grid(row = 3, column= 1,pady=5,sticky='e',  )
+
+
+
 
 
 root.mainloop()
