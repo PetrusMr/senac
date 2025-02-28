@@ -5,7 +5,11 @@ from tkinter import ttk
 from io import BytesIO
 
 image_url = "https://github.com/PetrusMr/senac/blob/main/UC5/projeto01/lixeira.png?raw=true"
+<<<<<<< HEAD
 response = requests.get(image_url, verify=False)
+=======
+response = requests.get(image_url)
+>>>>>>> 3b2baeb335c77247722d3caa4a0050a718d309fe
 image1 = CTkImage(Image.open((BytesIO(response.content))))
 set_appearance_mode("dark")
 
@@ -494,7 +498,11 @@ entrada_tree = ttk.Treeview(master=frame_relatorio, columns=columns_entrada, sho
 
 entrada_tree.heading('nome', text='nome')
 entrada_tree.heading('quantidade', text='quantidade')
+<<<<<<< HEAD
 entrada_tree.heading('Data/hora', text='Data/hora')
+=======
+entrada_tree.heading('Data/hora', text='Daentradara')
+>>>>>>> 3b2baeb335c77247722d3caa4a0050a718d309fe
 
 
 entrada_tree.column('nome',width=110 )
