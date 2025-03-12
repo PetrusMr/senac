@@ -1,18 +1,17 @@
-import requests
 from PIL import Image
 from customtkinter import *
 from tkinter import ttk
-from io import BytesIO
+import sqlite3
+import os
 
-image_url = "https://github.com/PetrusMr/senac/blob/main/UC5/projeto01/lixeira.png?raw=true"
-<<<<<<< HEAD
-response = requests.get(image_url, verify=False)
-=======
-response = requests.get(image_url)
->>>>>>> 3b2baeb335c77247722d3caa4a0050a718d309fe
-image1 = CTkImage(Image.open((BytesIO(response.content))))
+#import image
+file_path = os.path.dirname(os.path.realpath(__file__))
+image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
+
+# thema_ctk
 set_appearance_mode("dark")
 
+#função
 def switch_cadastrar():
     frame_editar.grid_forget()
     frame_saida.grid_forget()
@@ -73,7 +72,6 @@ def switch_entrada():
     btn_relatorio.configure(state='normal')
 
 
-
 def switch_relatorio():
     frame_cadastrar.grid_forget()
     frame_editar.grid_forget()    
@@ -99,9 +97,9 @@ def switch_relatorio():
 def delete_itens(linhas, botoes):
     linhas.grid_forget()
     botoes.grid_forget()
-
  
 linha = 0
+
 def adicionar_item_saida():  
     global linha
     item_vet = str(entry_qntd_tirar_saida.get())
@@ -125,14 +123,15 @@ def adicionar_item_entrada():
  
     if item_vet in nomes:    
         try :  
-            label = CTkLabel(scroll_frame_entrada_prod, text=item_vet, anchor="w")            
-            label.grid(row=linha, column=0, pady=5, padx=5, sticky = 'w')    
-            lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+            label_entrada_prod = CTkLabel(scroll_frame_entrada_prod, text=item_vet, anchor="w")            
+            label_entrada_prod.grid(row=linha, column=0, pady=5, padx=5, sticky = 'w')    
+            lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label_entrada_prod, lixeira),)
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
  
         except ValueError:
             return
         
+
 def export():
     root_export = CTkToplevel()
     root_export.geometry('570x330')
@@ -140,35 +139,35 @@ def export():
     root_export.attributes('-topmost',True)
 
     # frame
-    frame_root_2 = CTkFrame(master=root_export, width=500, height=300,border_color='#d9d4fd', border_width=2)
-    frame_root_2.pack(anchor='center')
-    frame_root_2.grid_propagate(False)
+    frame_root_exportar = CTkFrame(master=root_export, width=500, height=300,border_color='#d9d4fd', border_width=2)
+    frame_root_exportar.pack(anchor='center')
+    frame_root_exportar.grid_propagate(False)
 
 
     # label
-    escolher_relatorio = CTkLabel(master=frame_root_2, text='Escolher Relatorio(s)', font=('Arial', 20))
+    escolher_relatorio = CTkLabel(master=frame_root_exportar, text='Escolher Relatorio(s)', font=('Arial', 20))
     escolher_relatorio.grid(row=0, column=0, pady=30)
 
-    Escolher_extensao = CTkLabel(master=frame_root_2, text='Escolher extensão',font=('Arial', 20))
+    Escolher_extensao = CTkLabel(master=frame_root_exportar, text='Escolher extensão',font=('Arial', 20))
     Escolher_extensao.grid(row=0, column=1, pady=10, padx=50)
 
 
 
     # checkbox
-    exportar_estoque_r2 = CTkCheckBox(master=frame_root_2, text='Exportar estoque',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=1, column=0, sticky='w', padx=50)
-    exportar_saida_r2 = CTkCheckBox(master=frame_root_2, text='Exportar saida',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=2, column=0, sticky='w',padx=50, pady=5)
-    exportar_entrada_r2 = CTkCheckBox(master=frame_root_2, text='Exportar entrada',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=3, column=0, sticky='w', padx=50)
-    word_r2 = CTkCheckBox(master=frame_root_2, text='WORD',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=1, column=1, sticky='w',padx='100')
-    pdf_r2 = CTkCheckBox(master=frame_root_2, text='PDF',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=2, column=1, sticky='w',padx='100')
-    excel_r2 = CTkCheckBox(master=frame_root_2, text='EXCEL',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=3, column=1, sticky='w',padx='100')
+    exportar_estoque_root_exportar = CTkCheckBox(master=frame_root_exportar, text='Exportar estoque',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=1, column=0, sticky='w', padx=50)
+    exportar_saida_root_exportar = CTkCheckBox(master=frame_root_exportar, text='Exportar saida',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=2, column=0, sticky='w',padx=50, pady=5)
+    exportar_entrada_root_exportar = CTkCheckBox(master=frame_root_exportar, text='Exportar entrada',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=3, column=0, sticky='w', padx=50)
+    word_exportar = CTkCheckBox(master=frame_root_exportar, text='WORD',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=1, column=1, sticky='w',padx='100')
+    pdf_exportar = CTkCheckBox(master=frame_root_exportar, text='PDF',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=2, column=1, sticky='w',padx='100')
+    excel_exportar = CTkCheckBox(master=frame_root_exportar, text='EXCEL',font=('Arial', 15), corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6',).grid(row=3, column=1, sticky='w',padx='100')
     
     
     # button
-    btn_save_frame_root_2 = CTkButton(master=frame_root_2, text='SALVAR', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
-    btn_save_frame_root_2.grid(row=4, column=0, pady=20, sticky='e', columnspan=1)
+    btn_save_frame_exportar = CTkButton(master=frame_root_exportar, text='SALVAR', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+    btn_save_frame_exportar.grid(row=4, column=0, pady=20, sticky='e', columnspan=1)
 
-    btn_cancel_frame_root_2 = CTkButton(master=frame_root_2, text='CANCELAR', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
-    btn_cancel_frame_root_2.grid(row=4, column=1,sticky='w',padx=20, )
+    btn_cancel_frame_exportar = CTkButton(master=frame_root_exportar, text='CANCELAR', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+    btn_cancel_frame_exportar.grid(row=4, column=1,sticky='w',padx=20, )
 
 
 def switch_saida_relatorio():
@@ -179,6 +178,7 @@ def switch_saida_relatorio():
     btn_estoque_relatorio.configure(state='normal')
     btn_entrada_relatorio.configure(state='normal')
     btn_saida_relatorio.configure(state='disabled')
+
 
 def switch_entrada_relatorio():
     estoque_tree.grid_forget()
@@ -226,7 +226,7 @@ frame_relatorio.grid_propagate(False)
 # frame_lateral widget
 
 #label 
-label_nome_sistema = CTkLabel(master=frame_lateral, text='Nome do\n Sistema', font=('Arial', 30))
+label_nome_sistema = CTkLabel(master=frame_lateral, text='SGE', font=('Arial', 30))
 label_nome_sistema.pack(pady = 30)
 
 #butao
@@ -344,8 +344,8 @@ for item in nomes:
 # frame saida
 
 # Label
-label_Saida = CTkLabel(master=frame_saida, text='Saida de Produto', font=('Arial', 20),)
-label_Saida.grid(row = 0, column = 0, pady=5, padx= 200,sticky='w',columnspan=4)
+label_saida = CTkLabel(master=frame_saida, text='Saida de Produto', font=('Arial', 20),)
+label_saida.grid(row = 0, column = 0, pady=5, padx= 200,sticky='w',columnspan=4)
 
 
 
@@ -359,8 +359,8 @@ scroll_frame_saida.grid(row= 2, column= 0, rowspan= 4, padx=10)
 entry_buscar_saida = CTkEntry(master=frame_saida, width=219, border_color='#a399f9', corner_radius=32)
 entry_buscar_saida.grid(row= 1, column = 0, padx = 30, sticky='w')
 
-entry_NomeProd_saida = CTkEntry(master=frame_saida, state= 'disabled', border_color='#a399f9', corner_radius=32 )
-entry_NomeProd_saida.grid(row = 1, column = 1, sticky = 'w', padx = 5)
+entry_nome_prod_saida = CTkEntry(master=frame_saida, state= 'disabled', border_color='#a399f9', corner_radius=32 )
+entry_nome_prod_saida.grid(row = 1, column = 1, sticky = 'w', padx = 5)
 
 entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para -', width=120, border_color='#a399f9', corner_radius=32)
 entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w', padx=5)
@@ -386,8 +386,8 @@ scroll_frame_saida_prod.grid(row= 3, column= 1)
 
 # butao
 
-btn_adicionarItem_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida)
-btn_adicionarItem_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
+btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida)
+btn_adicionar_item_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
 btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black')
 btn_salvar_sair.grid(row = 5, column= 1, sticky='e')
@@ -454,6 +454,7 @@ btn_salvar_cancelar_entrada.grid(row = 5, column= 1, sticky='w', pady=5, padx=5)
 label_Relatorio = CTkLabel(master=frame_relatorio, text='Relatorio estoque', font=('Arial', 20),)
 label_Relatorio.grid(row = 0, column = 0, pady=5,padx = 20 , sticky='e')
 
+# entry
 entry_busca_relatorio_estoque = CTkEntry(master=frame_relatorio, placeholder_text='Buscar Produto', width=200, border_color='#a399f9', corner_radius=32)
 entry_busca_relatorio_estoque.grid(row=1, column = 0, padx=30, sticky  = 'w')
 
@@ -498,11 +499,10 @@ entrada_tree = ttk.Treeview(master=frame_relatorio, columns=columns_entrada, sho
 
 entrada_tree.heading('nome', text='nome')
 entrada_tree.heading('quantidade', text='quantidade')
-<<<<<<< HEAD
 entrada_tree.heading('Data/hora', text='Data/hora')
-=======
-entrada_tree.heading('Data/hora', text='Daentradara')
->>>>>>> 3b2baeb335c77247722d3caa4a0050a718d309fe
+
+entrada_tree.heading('Data/hora', text='Data/hora')
+
 
 
 entrada_tree.column('nome',width=110 )

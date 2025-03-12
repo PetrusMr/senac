@@ -1,3 +1,4 @@
+
 altura = float(input("Informe a altura: "))
 largura = float(input("Informe a largura: "))
 
