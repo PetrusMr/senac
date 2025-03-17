@@ -4,6 +4,10 @@ from tkinter import ttk
 import sqlite3
 import os
 
+
+
+
+
 #import image
 file_path = os.path.dirname(os.path.realpath(__file__))
 image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
