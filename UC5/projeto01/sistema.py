@@ -10,7 +10,10 @@ import os
 
 #import image
 file_path = os.path.dirname(os.path.realpath(__file__))
-image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
+#image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
+image = Image.open(file_path + "/lixeira.png")
+image = image.resize((25,25))
+image1 = CTkImage(image)
 
 # thema_ctk
 set_appearance_mode("dark")
@@ -76,31 +79,7 @@ def switch_entrada():
     btn_relatorio.configure(state='normal')
 
 
-def switch_relatorio():
-    frame_cadastrar.grid_forget()
-    frame_editar.grid_forget()    
-    frame_saida.grid_forget()
-    frame_entrada.grid_forget()    
-    frame_relatorio.grid(row = 0, column = 1, padx = 5)
-    frame_relatorio.grid_propagate(False)
-    label_Relatorio.configure(text='Relatorio estoque')
-    btn_estoque_relatorio.configure(state='disabled')
-    btn_saida_relatorio.configure(state='normal')
-    btn_entrada_relatorio.configure(state='normal')
-    estoque_tree.grid(row=2, column=0, columnspan=4)
-    saida_tree.grid_forget()
-    entrada_tree.grid_forget()
 
-    btn_cadastrar.configure(state='normal')
-    btn_editar.configure(state='normal')
-    btn_saida.configure(state='normal')
-    btn_entrada.configure(state='normal')
-    btn_relatorio.configure(state='disabled')
-
-
-def delete_itens(linhas, botoes):
-    linhas.grid_forget()
-    botoes.grid_forget()
  
 linha = 0
 
@@ -113,7 +92,7 @@ def adicionar_item_saida():
         try :  
             label = CTkLabel(scroll_frame_saida_prod, text=item_vet, anchor="w")            
             label.grid(row=linha, column=0, pady=5, padx=5, sticky='w')    
-            lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+            lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image= image1,fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
  
         except ValueError:
@@ -129,7 +108,7 @@ def adicionar_item_entrada():
         try :  
             label_entrada_prod = CTkLabel(scroll_frame_entrada_prod, text=item_vet, anchor="w")            
             label_entrada_prod.grid(row=linha, column=0, pady=5, padx=5, sticky = 'w')    
-            lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label_entrada_prod, lixeira),)
+            lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image= image1,fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label_entrada_prod, lixeira),)
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
  
         except ValueError:
@@ -194,9 +173,83 @@ def switch_entrada_relatorio():
     btn_saida_relatorio.configure(state='normal')
 
 
+def gerar_banco():
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS produtos ( id integer primary key autoincrement, nome text not null , quantidade int not null ,preco decimal not null ,descricao text)""")
+    banco.commit()
+    banco.close()
+
+def cadastrar_produto ():
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("INSERT INTO produtos (nome, quantidade ,preco, descricao) VALUES (?,?,?,?)", (entry_nome_produto.get(), 0,entry_preco.get(), descricao_box.get('1.0', 'end')))
+    banco.commit()
+    banco.close()
+    entry_nome_produto.delete(0, 'end')
+    entry_preco.delete(0, 'end')
+    descricao_box.delete('1.0', 'end')
+
+def listar_produtos():
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("SELECT * FROM produtos")
+    # produtos = cursor.fetchall()
+    # banco.close()
+    # return produtos
+
+def carregar_estoque():
+    # Conecta ao banco de dados
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    
+    # Limpa o Treeview antes de inserir novos dados
+    for item in estoque_tree.get_children():
+        estoque_tree.delete(item)
+    
+    # Consulta os dados da tabela 'produtos'
+    cursor.execute("SELECT nome, quantidade, preco, descricao FROM produtos")
+    produtos = cursor.fetchall()
+    
+    # Insere os dados no Treeview
+    for produto in produtos:
+        estoque_tree.insert('', 'end', values=produto)
+    
+    # Fecha a conexão com o banco
+    banco.close()
+
+def switch_relatorio():
+    frame_cadastrar.grid_forget()
+    frame_editar.grid_forget()    
+    frame_saida.grid_forget()
+    frame_entrada.grid_forget()    
+    frame_relatorio.grid(row=0, column=1, padx=5)
+    frame_relatorio.grid_propagate(False)
+    label_Relatorio.configure(text='Relatorio estoque')
+    btn_estoque_relatorio.configure(state='disabled')
+    btn_saida_relatorio.configure(state='normal')
+    btn_entrada_relatorio.configure(state='normal')
+    estoque_tree.grid(row=2, column=0, columnspan=4)
+    saida_tree.grid_forget()
+    entrada_tree.grid_forget()
+
+    carregar_estoque()
+
+    btn_cadastrar.configure(state='normal')
+    btn_editar.configure(state='normal')
+    btn_saida.configure(state='normal')
+    btn_entrada.configure(state='normal')
+    btn_relatorio.configure(state='disabled')
+
+def delete_itens(linhas, botoes):
+    linhas.grid_forget()
+    botoes.grid_forget()
+
 root = CTk()
 root.geometry('840x400')
 root.title('Sistema de gerenciamento')
+# gerar_banco()
 
 # style do tree view
 style = ttk.Style(master=root)
@@ -280,7 +333,7 @@ descricao_box.grid(row=3, column=1, sticky='w',pady=12)
 
 # butao
 
-btn_salvar = CTkButton(master=frame_cadastrar, width=80, text='Salvar', corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_salvar = CTkButton(master=frame_cadastrar, width=80, text='Salvar', corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6', command=cadastrar_produto)
 btn_salvar.grid(row=4, column=1, pady=5,sticky='e')
 
 
