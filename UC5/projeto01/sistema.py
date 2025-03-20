@@ -4,7 +4,7 @@ from tkinter import ttk
 import sqlite3
 import os
 
-
+produto_selecionado_id = None
 
 
 
@@ -33,21 +33,104 @@ def switch_cadastrar():
     btn_entrada.configure(state='normal')
     btn_relatorio.configure(state='normal')
 
-
 def switch_editar():
     frame_cadastrar.grid_forget()
     frame_saida.grid_forget()
     frame_entrada.grid_forget()
     frame_relatorio.grid_forget()
-    frame_editar.grid(row = 0, column = 1, padx = 5)
+    frame_editar.grid(row=0, column=1, padx=5)
     frame_editar.grid_propagate(False)
+
+    
+    global banco, cursor  
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("SELECT id, nome FROM produtos")
+    produtos = cursor.fetchall()
+
+    
+    for widget in scroll_frame_edit.winfo_children():
+        widget.destroy()
+
+    checkboxes = {}
+
+
+
+    def preencher_campos_edit():
+        global produto_selecionado_id
+       
+        for produto_id, checkbox in checkboxes.items():
+            if checkbox.get() == 1:
+                cursor.execute("SELECT nome, preco, descricao FROM produtos WHERE id = ?", (produto_id,))
+                produto = cursor.fetchone()
+                if produto:
+                    produto_selecionado_id = produto_id
+                    entry_nome_edit.delete(0, 'end')
+                    entry_nome_edit.insert(0, produto[0])  
+                    entry_preco_edit.delete(0, 'end')
+                    entry_preco_edit.insert(0, produto[1])  
+                    textbox_edit.delete('1.0', 'end')
+                    textbox_edit.insert('1.0', produto[2])  
+                break  
+
+    def marcar_unico_edit(produto_id):
+        
+        for pid, checkbox in checkboxes.items():
+            if pid != produto_id:
+                checkbox.deselect()
+        preencher_campos_edit()
+
+    
+    for produto in produtos:
+        produto_id, nome = produto
+        var = IntVar()
+        checkbox = CTkCheckBox(
+            master=scroll_frame_edit,
+            text=nome,
+            variable=var,
+            corner_radius=32,
+            border_color='#a399f9',
+            border_width=2,
+            fg_color='#a399f9',
+            text_color='white',
+            hover_color='#6e67a6',
+            command=lambda pid=produto_id: marcar_unico_edit(pid)
+        )
+        checkbox.pack(pady=5, padx=10, fill="x")
+        checkboxes[produto_id] = checkbox
+
+    
 
     btn_cadastrar.configure(state='normal')
     btn_editar.configure(state='disabled')
     btn_saida.configure(state='normal')
     btn_entrada.configure(state='normal')
     btn_relatorio.configure(state='normal')
- 
+
+def salvar_alteraçao_edit():
+    global produto_selecionado_id
+    nome = entry_nome_edit.get().strip()
+    preco = entry_preco_edit.get().strip()
+    descricao = textbox_edit.get('1.0', 'end').strip()
+
+
+    sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+
+
+
+
+    cursor.execute(
+                "UPDATE produtos SET nome = ?, preco = ?, descricao = ? WHERE id = ?",
+                (nome, preco, descricao, produto_selecionado_id)
+            )
+    banco.commit()
+    banco.close()    
+
+def fechar_banco():
+    global banco
+    if banco:
+        banco.close()
 
 def switch_saida():
     frame_cadastrar.grid_forget()
@@ -88,15 +171,6 @@ def adicionar_item_saida():
     item_vet = str(entry_qntd_tirar_saida.get())
     linha += 1
  
-    if item_vet in nomes:    
-        try :  
-            label = CTkLabel(scroll_frame_saida_prod, text=item_vet, anchor="w")            
-            label.grid(row=linha, column=0, pady=5, padx=5, sticky='w')    
-            lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image= image1,fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
-            lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
- 
-        except ValueError:
-            return  
         
 
 def adicionar_item_entrada():  
@@ -104,15 +178,6 @@ def adicionar_item_entrada():
     item_vet = str(entry_qntd_tirar_entrada.get())
     linha += 1
  
-    if item_vet in nomes:    
-        try :  
-            label_entrada_prod = CTkLabel(scroll_frame_entrada_prod, text=item_vet, anchor="w")            
-            label_entrada_prod.grid(row=linha, column=0, pady=5, padx=5, sticky = 'w')    
-            lixeira = CTkButton(scroll_frame_entrada_prod, width=25, height=25, text="", image= image1,fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label_entrada_prod, lixeira),)
-            lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
- 
-        except ValueError:
-            return
         
 
 def export():
@@ -204,9 +269,7 @@ def carregar_estoque():
     banco = sqlite3.connect('sistema_estoque.db')
     cursor = banco.cursor()
     
-    # Limpa o Treeview antes de inserir novos dados
-    for item in estoque_tree.get_children():
-        estoque_tree.delete(item)
+    # Limpa o Treeview antes de i
     
     # Consulta os dados da tabela 'produtos'
     cursor.execute("SELECT nome, quantidade, preco, descricao FROM produtos")
@@ -223,7 +286,7 @@ def switch_relatorio():
     frame_cadastrar.grid_forget()
     frame_editar.grid_forget()    
     frame_saida.grid_forget()
-    frame_entrada.grid_forget()    
+    frame_entrada.grid_forget()   
     frame_relatorio.grid(row=0, column=1, padx=5)
     frame_relatorio.grid_propagate(False)
     label_Relatorio.configure(text='Relatorio estoque')
@@ -233,6 +296,8 @@ def switch_relatorio():
     estoque_tree.grid(row=2, column=0, columnspan=4)
     saida_tree.grid_forget()
     entrada_tree.grid_forget()
+    
+    estoque_tree.delete(*estoque_tree.get_children())   
 
     carregar_estoque()
 
@@ -245,6 +310,7 @@ def switch_relatorio():
 def delete_itens(linhas, botoes):
     linhas.grid_forget()
     botoes.grid_forget()
+
 
 root = CTk()
 root.geometry('840x400')
@@ -366,7 +432,7 @@ textbox_edit.grid(row=4, column = 1, sticky ='w', pady=5,)
 
 # butao 
 
-btn_salvar_edit = CTkButton(master=frame_editar, text= 'Salvar', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_salvar_edit = CTkButton(master=frame_editar, text= 'Salvar', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6' ,command=salvar_alteraçao_edit)
 btn_salvar_edit.grid(row=5, column=1,pady=5, sticky='e')
 
 btn_excluir_edit = CTkButton(master=frame_editar, text='Excluir', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
@@ -375,25 +441,9 @@ btn_excluir_edit.grid(row=5, column=1,pady=5, )
 btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
 btn_cancelar_edit.grid(row=5, column=1,pady=5, sticky='w')
 
-# # temporario ---------------
-nomes = [
-    "Sakura",
-    "Yuki",
-    "Hana",
-    "Aiko",
-    "Miyuki",
-    "Emi",
-    "Haruka",
-    "Naomi",
-    "Reina",
-    "Kaori"
-]
-# #-----------------------------
 
 # checkbox
-for item in nomes:
-   box_edit = CTkCheckBox(master=scroll_frame_edit, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
-   box_edit.pack(pady=5, padx=10, fill="x")
+
 
 
 
@@ -428,12 +478,6 @@ entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w', padx=5)
 
 # checkbox
 
-# -------------temporario--------------
-for item in nomes:
-   box_saida = CTkCheckBox(master=scroll_frame_saida, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
-   box_saida.pack(pady=5, padx=10, fill="x")
-
-# ------------------------------------
 
 
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78',)
@@ -479,12 +523,6 @@ entry_qntd_tirar_entrada.grid(row = 2, column = 1, sticky = 'w', padx= 5)
 
 # checkbox
 
-# -------------temporario--------------
-for item in nomes:
-   box_entrada = CTkCheckBox(master=scroll_frame_entrada, text=item, corner_radius=32, border_color='#a399f9', border_width=2, fg_color='#a399f9', text_color='white', hover_color='#6e67a6', )
-   box_entrada.pack(pady=5, padx=10, fill="x")
-
-# ------------------------------------
 
 scroll_frame_entrada_prod = CTkScrollableFrame(master= frame_entrada, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
 scroll_frame_entrada_prod.grid(row= 3, column= 1)
