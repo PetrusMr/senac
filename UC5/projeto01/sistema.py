@@ -132,6 +132,18 @@ def fechar_banco():
     if banco:
         banco.close()
 
+
+
+def cancelar_editar():
+    entry_preco_edit.delete(0,'end')
+    entry_nome_edit.delete(0,'end')
+    textbox_edit.delete('1.0','end')
+    
+
+
+
+    
+
 def switch_saida():
     frame_cadastrar.grid_forget()
     frame_editar.grid_forget()    
@@ -139,6 +151,44 @@ def switch_saida():
     frame_relatorio.grid_forget()
     frame_saida.grid(row = 0, column = 1, padx = 5)
     frame_saida.grid_propagate(False)
+
+
+    
+
+    global banco, cursor  
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("SELECT id, nome FROM produtos")
+    produtos = cursor.fetchall()
+
+    
+    for widget in scroll_frame_saida.winfo_children():
+        widget.destroy()
+
+    checkboxes = {}
+
+
+        
+
+    for produto in produtos:
+        produto_id, nome = produto
+        var = IntVar()
+        checkbox = CTkCheckBox(
+            master=scroll_frame_saida,
+            text=nome,
+            variable=var,
+            corner_radius=32,
+            border_color='#a399f9',
+            border_width=2,
+            fg_color='#a399f9',
+            text_color='white',
+            hover_color='#6e67a6',
+            
+            
+        )
+        checkbox.pack(pady=5, padx=10, fill="x")
+        checkboxes[produto_id] = checkbox
+
 
     btn_cadastrar.configure(state='normal')
     btn_editar.configure(state='normal')
@@ -154,6 +204,29 @@ def switch_entrada():
     frame_relatorio.grid_forget()
     frame_entrada.grid(row = 0, column = 1, padx = 5)
     frame_entrada.grid_propagate(False)
+
+
+    global banco, cursor  
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("SELECT id, nome FROM produtos")
+    produtos = cursor.fetchall()
+
+    
+    for widget in scroll_frame_entrada.winfo_children():
+        widget.destroy()
+
+    checkboxes = {}
+
+    for produto in produtos:
+        produto_id, nome = produto
+        var = IntVar()
+        checkbox = CTkCheckBox(master=scroll_frame_entrada,text=nome,variable=var,corner_radius=32,border_color='#a399f9',border_width=2,fg_color='#a399f9',text_color='white',hover_color='#6e67a6',)
+        checkbox.pack(pady=5, padx=10, fill="x")
+        checkboxes[produto_id] = checkbox
+
+
+
 
     btn_cadastrar.configure(state='normal')
     btn_editar.configure(state='normal')
@@ -277,7 +350,7 @@ def carregar_estoque():
     
     # Insere os dados no Treeview
     for produto in produtos:
-        estoque_tree.insert('', 'end', values=produto)
+        estoque_tree.insert('', 'end', values=produto,)
     
     # Fecha a conexão com o banco
     banco.close()
@@ -312,6 +385,9 @@ def delete_itens(linhas, botoes):
     botoes.grid_forget()
 
 
+
+
+
 root = CTk()
 root.geometry('840x400')
 root.title('Sistema de gerenciamento')
@@ -320,9 +396,9 @@ root.title('Sistema de gerenciamento')
 # style do tree view
 style = ttk.Style(master=root)
 style.theme_use('clam')
-style.configure("Treeview", background="#3484F0", fieldbackground="#565b5e", foreground="white",rowheight=25,bordercolor="#343638", )
+style.configure("Treeview", background="#a399f9", fieldbackground="#565b5e", foreground="black",rowheight=25,bordercolor="#343638", )
 
-style.configure("Treeview.Heading",background="#565b5e",foreground="white",relief="flat")
+style.configure("Treeview.Heading",background="#565b5e",foreground="black",relief="flat")
 style.map("Treeview.Heading",background=[('active', '#a399f9')])
 
 # frame
@@ -438,7 +514,7 @@ btn_salvar_edit.grid(row=5, column=1,pady=5, sticky='e')
 btn_excluir_edit = CTkButton(master=frame_editar, text='Excluir', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
 btn_excluir_edit.grid(row=5, column=1,pady=5, )
 
-btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6', command= cancelar_editar)
 btn_cancelar_edit.grid(row=5, column=1,pady=5, sticky='w')
 
 
@@ -567,8 +643,8 @@ estoque_tree.heading('preço', text='preço')
 estoque_tree.heading('descricao', text='descricao')
 
 estoque_tree.column('nome',width=110 )
-estoque_tree.column('quantidade',width=110 )
-estoque_tree.column('preço',width=110 )
+estoque_tree.column('quantidade',width=110 , anchor=CENTER )
+estoque_tree.column('preço',width=110 , anchor=CENTER )
 estoque_tree.column('descricao',width=110 )
 
 
@@ -583,8 +659,8 @@ saida_tree.heading('Data/hora', text='Data/hora')
 
 
 saida_tree.column('nome',width=110 )
-saida_tree.column('quantidade',width=110 )
-saida_tree.column('Data/hora',width=110 )
+saida_tree.column('quantidade',width=110  , anchor=CENTER)
+saida_tree.column('Data/hora',width=110  , anchor=CENTER)
 
 
 # treeview entrada
@@ -600,9 +676,9 @@ entrada_tree.heading('Data/hora', text='Data/hora')
 
 
 
-entrada_tree.column('nome',width=110 )
-entrada_tree.column('quantidade',width=110 )
-entrada_tree.column('Data/hora',width=110 )
+entrada_tree.column('nome',width=110  )
+entrada_tree.column('quantidade',width=110  , anchor=CENTER)
+entrada_tree.column('Data/hora',width=110  , anchor=CENTER)
 
 # button
 btn_exportar_relatorio = CTkButton(master=frame_relatorio, text='Exportar', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=export)
