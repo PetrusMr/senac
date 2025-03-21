@@ -7,7 +7,6 @@ import os
 produto_selecionado_id = None
 
 
-
 #import image
 file_path = os.path.dirname(os.path.realpath(__file__))
 #image1 = CTkImage(Image.open(fp= "C:/Users/970548/OneDrive - SENAC em Minas - EDU/Documentos/Senac/senac/UC5/projeto01/lixeira.png"), size=(25,25))
@@ -33,15 +32,35 @@ def switch_cadastrar():
     btn_entrada.configure(state='normal')
     btn_relatorio.configure(state='normal')
 
-def switch_editar():
-    frame_cadastrar.grid_forget()
-    frame_saida.grid_forget()
-    frame_entrada.grid_forget()
-    frame_relatorio.grid_forget()
-    frame_editar.grid(row=0, column=1, padx=5)
-    frame_editar.grid_propagate(False)
 
+def fechar_banco():
+    global banco
+    if banco:
+        banco.close()
+   
+   
+checkboxes = {}
+
+def preencher_campos_edit():
+    global produto_selecionado_id
     
+    for produto_id, checkbox in checkboxes.items():
+        if checkbox.get() == 1:
+            cursor.execute("SELECT nome, preco, descricao FROM produtos WHERE id = ?", (produto_id,))
+            produto = cursor.fetchone()
+            if produto:
+                produto_selecionado_id = produto_id
+                entry_nome_edit.delete(0, 'end')
+                entry_nome_edit.insert(0, produto[0])  
+                entry_preco_edit.delete(0, 'end')
+                entry_preco_edit.insert(0, produto[1])  
+                textbox_edit.delete('1.0', 'end')
+                textbox_edit.insert('1.0', produto[2])  
+            break  
+
+
+def itens_laterais_edit():
+       
     global banco, cursor  
     banco = sqlite3.connect('sistema_estoque.db')
     cursor = banco.cursor()
@@ -52,26 +71,10 @@ def switch_editar():
     for widget in scroll_frame_edit.winfo_children():
         widget.destroy()
 
-    checkboxes = {}
+ 
 
 
 
-    def preencher_campos_edit():
-        global produto_selecionado_id
-       
-        for produto_id, checkbox in checkboxes.items():
-            if checkbox.get() == 1:
-                cursor.execute("SELECT nome, preco, descricao FROM produtos WHERE id = ?", (produto_id,))
-                produto = cursor.fetchone()
-                if produto:
-                    produto_selecionado_id = produto_id
-                    entry_nome_edit.delete(0, 'end')
-                    entry_nome_edit.insert(0, produto[0])  
-                    entry_preco_edit.delete(0, 'end')
-                    entry_preco_edit.insert(0, produto[1])  
-                    textbox_edit.delete('1.0', 'end')
-                    textbox_edit.insert('1.0', produto[2])  
-                break  
 
     def marcar_unico_edit(produto_id):
         
@@ -80,7 +83,7 @@ def switch_editar():
                 checkbox.deselect()
         preencher_campos_edit()
 
-    
+        
     for produto in produtos:
         produto_id, nome = produto
         var = IntVar()
@@ -99,13 +102,63 @@ def switch_editar():
         checkbox.pack(pady=5, padx=10, fill="x")
         checkboxes[produto_id] = checkbox
 
-    
+   
+def switch_editar():
+    frame_cadastrar.grid_forget()
+    frame_saida.grid_forget()
+    frame_entrada.grid_forget()
+    frame_relatorio.grid_forget()
+    frame_editar.grid(row=0, column=1, padx=5)
+    frame_editar.grid_propagate(False)
+
+    itens_laterais_edit()
 
     btn_cadastrar.configure(state='normal')
     btn_editar.configure(state='disabled')
     btn_saida.configure(state='normal')
     btn_entrada.configure(state='normal')
     btn_relatorio.configure(state='normal')
+
+
+def filtro_edit(event):
+    banco = sqlite3.connect("sistema_estoque.db")
+    cursor = banco.cursor()
+    
+
+    for widget in scroll_frame_edit.winfo_children():
+        widget.destroy()
+
+
+    filtro = entry_busca_edit.get()
+    cursor.execute('SELECT nome from produtos  where nome like ?', (f'%{filtro}%',))
+    filtrado = cursor.fetchall()
+
+
+    if entry_busca_edit.get() == '':
+        itens_laterais_edit()
+        return
+    else:
+        
+
+        for produto in filtrado:
+            nome = produto
+            var = IntVar()
+            checkbox = CTkCheckBox(
+                master=scroll_frame_edit,
+                text=nome,
+                variable=var,
+                corner_radius=32,
+                border_color='#a399f9',
+                border_width=2,
+                fg_color='#a399f9',
+                text_color='white',
+                hover_color='#6e67a6',)
+                
+            checkbox.pack(pady=5, padx=10, fill="x")
+            preencher_campos_edit()
+
+    banco.close()
+
 
 def salvar_alteraçao_edit():
     global produto_selecionado_id
@@ -125,23 +178,42 @@ def salvar_alteraçao_edit():
                 (nome, preco, descricao, produto_selecionado_id)
             )
     banco.commit()
-    banco.close()    
+    banco.close()  
 
-def fechar_banco():
-    global banco
-    if banco:
-        banco.close()
+    entry_nome_edit.delete(0,'end')
+    entry_preco_edit.delete(0,'end')
+    textbox_edit.delete('1.0','end')  
 
+
+def excluir_edit(): 
+    global produto_selecionado_id
+    nomes = entry_nome_edit.get().strip()
+    preco = entry_preco_edit.get().strip()
+    descricao = textbox_edit.get('1.0', 'end').strip()
+
+
+    sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+
+
+
+
+    cursor.execute(
+                "DELETE FROM produtos WHERE nome = ?"
+                (nomes)
+            )
+    banco.commit()
+    banco.close()  
+
+    entry_nome_edit.delete(0,'end')
+    entry_preco_edit.delete(0,'end')
+    textbox_edit.delete('1.0','end')  
 
 
 def cancelar_editar():
     entry_preco_edit.delete(0,'end')
     entry_nome_edit.delete(0,'end')
     textbox_edit.delete('1.0','end')
-    
-
-
-
     
 
 def switch_saida():
@@ -235,16 +307,14 @@ def switch_entrada():
     btn_relatorio.configure(state='normal')
 
 
-
- 
 linha = 0
+
 
 def adicionar_item_saida():  
     global linha
     item_vet = str(entry_qntd_tirar_saida.get())
     linha += 1
- 
-        
+   
 
 def adicionar_item_entrada():  
     global linha
@@ -252,7 +322,6 @@ def adicionar_item_entrada():
     linha += 1
  
         
-
 def export():
     root_export = CTkToplevel()
     root_export.geometry('570x330')
@@ -319,6 +388,7 @@ def gerar_banco():
     banco.commit()
     banco.close()
 
+
 def cadastrar_produto ():
     banco = sqlite3.connect('sistema_estoque.db')
     cursor = banco.cursor()
@@ -329,6 +399,7 @@ def cadastrar_produto ():
     entry_preco.delete(0, 'end')
     descricao_box.delete('1.0', 'end')
 
+
 def listar_produtos():
     banco = sqlite3.connect('sistema_estoque.db')
     cursor = banco.cursor()
@@ -336,6 +407,7 @@ def listar_produtos():
     # produtos = cursor.fetchall()
     # banco.close()
     # return produtos
+
 
 def carregar_estoque():
     # Conecta ao banco de dados
@@ -354,6 +426,7 @@ def carregar_estoque():
     
     # Fecha a conexão com o banco
     banco.close()
+
 
 def switch_relatorio():
     frame_cadastrar.grid_forget()
@@ -380,12 +453,10 @@ def switch_relatorio():
     btn_entrada.configure(state='normal')
     btn_relatorio.configure(state='disabled')
 
+
 def delete_itens(linhas, botoes):
     linhas.grid_forget()
     botoes.grid_forget()
-
-
-
 
 
 root = CTk()
@@ -494,6 +565,8 @@ scroll_frame_edit.grid(row= 2, column=0, sticky='w',rowspan = 4, padx= 30)
 # entry
 entry_busca_edit = CTkEntry(master=frame_editar, placeholder_text='Buscar Produto', width=400, border_color='#a399f9', corner_radius=32)
 entry_busca_edit.grid(row=1, column = 0, pady= 5, padx=30, sticky  = 'w',columnspan=3)
+entry_busca_edit.bind("<KeyRelease>", filtro_edit)
+
 
 entry_nome_edit = CTkEntry(master=frame_editar, placeholder_text='Nome do Produto', width=250, border_color='#a399f9', corner_radius=32)
 entry_nome_edit.grid(row=2, column = 1,  sticky  = 'w', pady=5 )
@@ -511,7 +584,7 @@ textbox_edit.grid(row=4, column = 1, sticky ='w', pady=5,)
 btn_salvar_edit = CTkButton(master=frame_editar, text= 'Salvar', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6' ,command=salvar_alteraçao_edit)
 btn_salvar_edit.grid(row=5, column=1,pady=5, sticky='e')
 
-btn_excluir_edit = CTkButton(master=frame_editar, text='Excluir', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6')
+btn_excluir_edit = CTkButton(master=frame_editar, text='Excluir', width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6', command=excluir_edit)
 btn_excluir_edit.grid(row=5, column=1,pady=5, )
 
 btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, corner_radius=32, fg_color='#a399f9', text_color='black', hover_color='#6e67a6', command= cancelar_editar)
