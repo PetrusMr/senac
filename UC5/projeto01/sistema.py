@@ -187,7 +187,7 @@ def salvar_alteraçao_edit():
 
 def excluir_edit(): 
     global produto_selecionado_id
-    nomes = entry_nome_edit.get().strip()
+    nome = entry_nome_edit.get().strip()
     preco = entry_preco_edit.get().strip()
     descricao = textbox_edit.get('1.0', 'end').strip()
 
@@ -198,10 +198,9 @@ def excluir_edit():
 
 
 
-    cursor.execute(
-                "DELETE FROM produtos WHERE nome = ?"
-                (nomes)
-            )
+    cursor.execute("DELETE FROM produtos WHERE nome = ?", (nome,))
+
+            
     banco.commit()
     banco.close()  
 
