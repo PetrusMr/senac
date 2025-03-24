@@ -5,6 +5,8 @@ import sqlite3
 import os
 
 produto_selecionado_id = None
+produto_selecionado_id_saida = None
+produto_selecionado_id_entrada = None
 
 
 #import image
@@ -123,6 +125,13 @@ def switch_editar():
 def filtro_edit(event):
     banco = sqlite3.connect("sistema_estoque.db")
     cursor = banco.cursor()
+
+    def marcar_unico_edit(produto_id):
+        
+        for pid, checkbox in checkboxes.items():
+            if pid != produto_id and checkbox.winfo_exists():
+                checkbox.deselect() 
+        preencher_campos_edit()
     
 
     for widget in scroll_frame_edit.winfo_children():
@@ -130,7 +139,8 @@ def filtro_edit(event):
 
 
     filtro = entry_busca_edit.get()
-    cursor.execute('SELECT nome from produtos  where nome like ?', (f'%{filtro}%',))
+    cursor.execute('SELECT id, nome FROM produtos WHERE nome LIKE ?', (f'%{filtro}%',))
+
     filtrado = cursor.fetchall()
 
 
@@ -141,7 +151,7 @@ def filtro_edit(event):
         
 
         for produto in filtrado:
-            nome = produto
+            produto_id, nome = produto
             var = IntVar()
             checkbox = CTkCheckBox(
                 master=scroll_frame_edit,
@@ -152,9 +162,13 @@ def filtro_edit(event):
                 border_width=2,
                 fg_color='#a399f9',
                 text_color='white',
-                hover_color='#6e67a6',)
+                hover_color='#6e67a6',
+                command=lambda pid=produto_id: marcar_unico_edit(pid))
+
+            
                 
             checkbox.pack(pady=5, padx=10, fill="x")
+            checkboxes[produto_id] = checkbox
             preencher_campos_edit()
 
     banco.close()
@@ -215,112 +229,10 @@ def cancelar_editar():
     textbox_edit.delete('1.0','end')
     
 
-def switch_saida():
-    frame_cadastrar.grid_forget()
-    frame_editar.grid_forget()    
-    frame_entrada.grid_forget()
-    frame_relatorio.grid_forget()
-    frame_saida.grid(row = 0, column = 1, padx = 5)
-    frame_saida.grid_propagate(False)
-
-
-    
-
-    global banco, cursor  
-    banco = sqlite3.connect('sistema_estoque.db')
-    cursor = banco.cursor()
-    cursor.execute("SELECT id, nome FROM produtos")
-    produtos = cursor.fetchall()
-
-    
-    for widget in scroll_frame_saida.winfo_children():
-        widget.destroy()
-
-    checkboxes = {}
-
-
-        
-
-    for produto in produtos:
-        produto_id, nome = produto
-        var = IntVar()
-        checkbox = CTkCheckBox(
-            master=scroll_frame_saida,
-            text=nome,
-            variable=var,
-            corner_radius=32,
-            border_color='#a399f9',
-            border_width=2,
-            fg_color='#a399f9',
-            text_color='white',
-            hover_color='#6e67a6',
-            
-            
-        )
-        checkbox.pack(pady=5, padx=10, fill="x")
-        checkboxes[produto_id] = checkbox
-
-
-    btn_cadastrar.configure(state='normal')
-    btn_editar.configure(state='normal')
-    btn_saida.configure(state='disabled')
-    btn_entrada.configure(state='normal')
-    btn_relatorio.configure(state='normal')
-
-
-def switch_entrada():
-    frame_cadastrar.grid_forget()
-    frame_editar.grid_forget()    
-    frame_saida.grid_forget()
-    frame_relatorio.grid_forget()
-    frame_entrada.grid(row = 0, column = 1, padx = 5)
-    frame_entrada.grid_propagate(False)
-
-
-    global banco, cursor  
-    banco = sqlite3.connect('sistema_estoque.db')
-    cursor = banco.cursor()
-    cursor.execute("SELECT id, nome FROM produtos")
-    produtos = cursor.fetchall()
-
-    
-    for widget in scroll_frame_entrada.winfo_children():
-        widget.destroy()
-
-    checkboxes = {}
-
-    for produto in produtos:
-        produto_id, nome = produto
-        var = IntVar()
-        checkbox = CTkCheckBox(master=scroll_frame_entrada,text=nome,variable=var,corner_radius=32,border_color='#a399f9',border_width=2,fg_color='#a399f9',text_color='white',hover_color='#6e67a6',)
-        checkbox.pack(pady=5, padx=10, fill="x")
-        checkboxes[produto_id] = checkbox
-
-
-
-
-    btn_cadastrar.configure(state='normal')
-    btn_editar.configure(state='normal')
-    btn_saida.configure(state='normal')
-    btn_entrada.configure(state='disabled')
-    btn_relatorio.configure(state='normal')
-
 
 linha = 0
 
 
-def adicionar_item_saida():  
-    global linha
-    item_vet = str(entry_qntd_tirar_saida.get())
-    linha += 1
-   
-
-def adicionar_item_entrada():  
-    global linha
-    item_vet = str(entry_qntd_tirar_entrada.get())
-    linha += 1
- 
-        
 def export():
     root_export = CTkToplevel()
     root_export.geometry('570x330')
@@ -453,9 +365,294 @@ def switch_relatorio():
     btn_relatorio.configure(state='disabled')
 
 
-def delete_itens(linhas, botoes):
-    linhas.grid_forget()
-    botoes.grid_forget()
+def preencher_campos_saida():
+    global produto_selecionado_id_saida, banco, cursor
+
+
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+
+    for produto_id, checkbox in checkboxes.items():
+  
+        if checkbox.get() == 1:
+            cursor.execute("SELECT nome FROM produtos WHERE id = ?", (produto_id,))
+            produto = cursor.fetchone()
+
+            if produto:
+                produto_selecionado_id_saida = produto_id
+
+
+                entry_nome_prod_saida.configure(state='normal')
+
+                entry_nome_prod_saida.delete(0, 'end')
+                entry_nome_prod_saida.insert(0, produto[0])
+                entry_nome_prod_saida.configure(state='disabled')
+
+
+            break
+
+
+    banco.close()
+
+
+def itens_laterais_saida():
+       
+    global banco, cursor  
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("SELECT id, nome FROM produtos")
+    produtos = cursor.fetchall()
+
+    
+    for widget in scroll_frame_edit.winfo_children():
+        widget.destroy()
+
+ 
+
+
+
+
+    def marcar_unico_saida(produto_id):
+        
+        for pid, checkbox in checkboxes.items():
+            if pid != produto_id:
+                checkbox.deselect()
+        preencher_campos_saida()
+
+        
+    for produto in produtos:
+        produto_id, nome = produto
+        var = IntVar()
+        checkbox = CTkCheckBox(
+            master=scroll_frame_saida,
+            text=nome,
+            variable=var,
+            corner_radius=32,
+            border_color='#a399f9',
+            border_width=2,
+            fg_color='#a399f9',
+            text_color='white',
+            hover_color='#6e67a6',
+            command=lambda pid=produto_id: marcar_unico_saida(pid)
+        )
+        checkbox.pack(pady=5, padx=10, fill="x")
+        checkboxes[produto_id] = checkbox
+
+
+def switch_saida():
+    frame_cadastrar.grid_forget()
+    frame_editar.grid_forget()    
+    frame_entrada.grid_forget()
+    frame_relatorio.grid_forget()
+    frame_saida.grid(row = 0, column = 1, padx = 5)
+    frame_saida.grid_propagate(False)
+
+    itens_laterais_saida()
+
+    btn_cadastrar.configure(state='normal')
+    btn_editar.configure(state='normal')
+    btn_saida.configure(state='disabled')
+    btn_entrada.configure(state='normal')
+    btn_relatorio.configure(state='normal')
+
+
+def filtro_saida(event):
+    banco = sqlite3.connect("sistema_estoque.db")
+    cursor = banco.cursor()
+
+    def marcar_unico_saida(produto_id):
+        
+        for pid, checkbox in checkboxes.items():
+            if pid != produto_id and checkbox.winfo_exists():
+                checkbox.deselect() 
+        preencher_campos_saida()
+    
+
+    for widget in scroll_frame_saida.winfo_children():
+        widget.destroy()
+
+
+    filtro = entry_buscar_saida.get()
+    cursor.execute('SELECT id, nome FROM produtos WHERE nome LIKE ?', (f'%{filtro}%',))
+
+    filtrado = cursor.fetchall()
+
+
+    if entry_buscar_saida.get() == '':
+        itens_laterais_saida()
+        return
+    else:
+        
+
+        for produto in filtrado:
+            produto_id, nome = produto
+            var = IntVar()
+            checkbox = CTkCheckBox(
+                master=scroll_frame_saida,
+                text=nome,
+                variable=var,
+                corner_radius=32,
+                border_color='#a399f9',
+                border_width=2,
+                fg_color='#a399f9',
+                text_color='white',
+                hover_color='#6e67a6',
+                command=lambda pid=produto_id: marcar_unico_saida(pid))
+
+            
+                
+            checkbox.pack(pady=5, padx=10, fill="x")
+            checkboxes[produto_id] = checkbox
+            preencher_campos_saida()
+
+    banco.close()
+
+
+def preencher_campos_entrada():
+    global produto_selecionado_id_entrada, banco, cursor
+
+
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+
+    for produto_id, checkbox in checkboxes.items():
+  
+        if checkbox.get() == 1:
+            cursor.execute("SELECT nome FROM produtos WHERE id = ?", (produto_id,))
+            produto = cursor.fetchone()
+
+            if produto:
+                produto_selecionado_id_entrada = produto_id
+
+
+                entry_NomeProd_entrada.configure(state='normal')
+
+                entry_NomeProd_entrada.delete(0, 'end')
+                entry_NomeProd_entrada.insert(0, produto[0])
+                entry_NomeProd_entrada.configure(state='disabled')
+
+
+            break
+
+
+    banco.close()
+
+
+def itens_laterais_entrada():
+       
+    global banco, cursor  
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    cursor.execute("SELECT id, nome FROM produtos")
+    produtos = cursor.fetchall()
+
+    
+    for widget in scroll_frame_edit.winfo_children():
+        widget.destroy()
+
+ 
+
+
+
+
+    def marcar_unico_entrada(produto_id):
+        
+        for pid, checkbox in checkboxes.items():
+            if pid != produto_id:
+                checkbox.deselect()
+        preencher_campos_entrada()
+
+        
+    for produto in produtos:
+        produto_id, nome = produto
+        var = IntVar()
+        checkbox = CTkCheckBox(
+            master=scroll_frame_entrada,
+            text=nome,
+            variable=var,
+            corner_radius=32,
+            border_color='#a399f9',
+            border_width=2,
+            fg_color='#a399f9',
+            text_color='white',
+            hover_color='#6e67a6',
+            command=lambda pid=produto_id: marcar_unico_entrada(pid)
+        )
+        checkbox.pack(pady=5, padx=10, fill="x")
+        checkboxes[produto_id] = checkbox
+
+
+def switch_entrada():
+    frame_cadastrar.grid_forget()
+    frame_editar.grid_forget()    
+    frame_saida.grid_forget()
+    frame_relatorio.grid_forget()
+    frame_entrada.grid(row = 0, column = 1, padx = 5)
+    frame_entrada.grid_propagate(False)
+
+    itens_laterais_entrada()
+
+    btn_cadastrar.configure(state='normal')
+    btn_editar.configure(state='normal')
+    btn_saida.configure(state='normal')
+    btn_entrada.configure(state='disabled')
+    btn_relatorio.configure(state='normal')
+
+
+def filtro_entrada(event):
+    banco = sqlite3.connect("sistema_estoque.db")
+    cursor = banco.cursor()
+
+    def marcar_unico_entrada(produto_id):
+        
+        for pid, checkbox in checkboxes.items():
+            if pid != produto_id and checkbox.winfo_exists():
+                checkbox.deselect() 
+        preencher_campos_entrada()
+    
+
+    for widget in scroll_frame_entrada.winfo_children():
+        widget.destroy()
+
+
+    filtro = entry_buscar_entrada.get()
+    cursor.execute('SELECT id, nome FROM produtos WHERE nome LIKE ?', (f'%{filtro}%',))
+
+    filtrado = cursor.fetchall()
+
+
+    if entry_buscar_entrada.get() == '':
+        itens_laterais_entrada()
+        return
+    else:
+        
+
+        for produto in filtrado:
+            produto_id, nome = produto
+            var = IntVar()
+            checkbox = CTkCheckBox(
+                master=scroll_frame_entrada,
+                text=nome,
+                variable=var,
+                corner_radius=32,
+                border_color='#a399f9',
+                border_width=2,
+                fg_color='#a399f9',
+                text_color='white',
+                hover_color='#6e67a6',
+                command=lambda pid=produto_id: marcar_unico_entrada(pid))
+
+            
+                
+            checkbox.pack(pady=5, padx=10, fill="x")
+            checkboxes[produto_id] = checkbox
+            preencher_campos_entrada()
+
+    banco.close()
+
+
+
+
 
 
 root = CTk()
@@ -590,12 +787,6 @@ btn_cancelar_edit = CTkButton(master=frame_editar, text='Cancelar',width=90, cor
 btn_cancelar_edit.grid(row=5, column=1,pady=5, sticky='w')
 
 
-# checkbox
-
-
-
-
-
 # frame saida
 
 # Label
@@ -611,31 +802,24 @@ scroll_frame_saida.grid(row= 2, column= 0, rowspan= 4, padx=10)
 
 
 # entry
-entry_buscar_saida = CTkEntry(master=frame_saida, width=219, border_color='#a399f9', corner_radius=32)
+entry_buscar_saida = CTkEntry(master=frame_saida, width=219, placeholder_text="Buscar Produto", border_color='#a399f9', corner_radius=32)
 entry_buscar_saida.grid(row= 1, column = 0, padx = 30, sticky='w')
+entry_buscar_saida.bind("<KeyRelease>", filtro_saida)
 
-entry_nome_prod_saida = CTkEntry(master=frame_saida, state= 'disabled', border_color='#a399f9', corner_radius=32 )
+entry_nome_prod_saida = CTkEntry(master=frame_saida, border_color='#a399f9', corner_radius=32 )
 entry_nome_prod_saida.grid(row = 1, column = 1, sticky = 'w', padx = 5)
 
 entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para -', width=120, border_color='#a399f9', corner_radius=32)
 entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w', padx=5)
 
 
-
-
-
-# checkbox
-
-
-
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78',)
 scroll_frame_saida_prod.grid(row= 3, column= 1)
 
 
-
 # butao
 
-btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida)
+btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',)
 btn_adicionar_item_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
 btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black')
@@ -658,8 +842,9 @@ scroll_frame_entrada.grid(row= 2, column= 0, rowspan= 4, padx=10)
 
 
 # entry
-entry_buscar_entrada = CTkEntry(master=frame_entrada,width=219, border_color='#a399f9', corner_radius=32)
+entry_buscar_entrada = CTkEntry(master=frame_entrada,width=219, placeholder_text="Buscar Produto" ,border_color='#a399f9', corner_radius=32)
 entry_buscar_entrada.grid(row= 1, column = 0, padx = 20, sticky = 'w')
+entry_buscar_entrada.bind("<KeyRelease>", filtro_entrada)
 
 entry_NomeProd_entrada = CTkEntry(master=frame_entrada, state= 'disabled', border_color='#a399f9', corner_radius=32 )
 entry_NomeProd_entrada.grid(row = 1, column = 1, sticky = 'w', padx=5)
@@ -669,9 +854,6 @@ entry_qntd_tirar_entrada.grid(row = 2, column = 1, sticky = 'w', padx= 5)
 
 
 
-# checkbox
-
-
 scroll_frame_entrada_prod = CTkScrollableFrame(master= frame_entrada, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78' )
 scroll_frame_entrada_prod.grid(row= 3, column= 1)
 
@@ -679,7 +861,7 @@ scroll_frame_entrada_prod.grid(row= 3, column= 1)
 
 # butao
 
-btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_entrada)
+btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
 btn_adicionarItem_entrada.grid(row = 2, column= 1, sticky='e',pady=5,) 
 
 btn_salvar_entrada = CTkButton(master=frame_entrada, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
