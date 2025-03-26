@@ -73,9 +73,6 @@ def itens_laterais_edit():
     for widget in scroll_frame_edit.winfo_children():
         widget.destroy()
 
- 
-
-
 
 
     def marcar_unico_edit(produto_id):
@@ -133,7 +130,10 @@ def filtro_edit(event):
         
         for pid, checkbox in checkboxes.items():
             if pid != produto_id and checkbox.winfo_exists():
-                checkbox.deselect() 
+                checkbox.deselect()
+                entry_nome_edit.delete(0, 'end')
+                entry_preco_edit.delete(0, 'end')
+                textbox_edit.delete('1.0', 'end') 
         preencher_campos_edit()
     
 
@@ -223,7 +223,8 @@ def excluir_edit():
 
     entry_nome_edit.delete(0,'end')
     entry_preco_edit.delete(0,'end')
-    textbox_edit.delete('1.0','end')  
+    textbox_edit.delete('1.0','end') 
+    itens_laterais_edit() 
 
 
 def cancelar_editar():
