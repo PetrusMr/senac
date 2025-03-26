@@ -83,6 +83,9 @@ def itens_laterais_edit():
         for pid, checkbox in checkboxes.items():
             if pid != produto_id:
                 checkbox.deselect()
+                entry_nome_edit.delete(0, 'end')
+                entry_preco_edit.delete(0, 'end')
+                textbox_edit.delete('1.0', 'end')
         preencher_campos_edit()
 
         
@@ -407,9 +410,6 @@ def itens_laterais_saida():
     for widget in scroll_frame_edit.winfo_children():
         widget.destroy()
 
- 
-
-
 
 
     def marcar_unico_saida(produto_id):
@@ -513,34 +513,40 @@ def delete_itens(linhas, botoes):
      linhas.grid_forget()
      botoes.grid_forget()
 
-item_saida = {}
-vetor_saida  = []
-def adicionar_item_saida_func():
-    global linha, vetor_saida, item_saida
-    entry_nome_prod_saida.configure(state='normal')
-    item_saida['nome'] = entry_nome_prod_saida.get()
-    item_saida["quantidade"] = entry_qntd_tirar_saida.get()
+item_saida = []
+quantidade_saida  = []
 
-    if entry_nome_prod_saida.get() == '' or  entry_qntd_tirar_saida.get() == 0 or  entry_qntd_tirar_saida.get() == '' :
-        pass
-    else:
-        vetor_saida.append(item_saida.copy())
+
+def adicionar_item_saida_func():
+
+    global linha, quantidade_saida, item_saida
+    entry_nome_prod_saida.configure(state='normal')
+
+    item = entry_nome_prod_saida.get()
 
 
     
     linha += 1
   
-    print(vetor_saida)
-    for u in vetor_saida:
-         try :  
-             label = CTkLabel(scroll_frame_saida_prod, text=item_saida['nome'], anchor="w")            
-             label.grid(row=linha, column=0, pady=5, padx=5)    
-             lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
-             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
-             print('ok')
+    print(item_saida)
+    
+    if item in item_saida:
+         pass
+    
+
+    else:
+        item_saida.append(entry_nome_prod_saida.get())
+        quantidade_saida.append(entry_qntd_tirar_saida.get())
+        try :  
+
+            label = CTkLabel(scroll_frame_saida_prod, text=item, anchor="w")            
+            label.grid(row=linha, column=0, pady=5, padx=5)    
+            lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+            lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
+            print('ok')
   
-         except ValueError:
-             return
+        except ValueError:
+            return
          
 
 def preencher_campos_entrada():
@@ -854,9 +860,9 @@ scroll_frame_saida_prod.grid(row= 3, column= 1)
 # butao
 
 
-btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida_func)
 
-btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',)
+
+btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=adicionar_item_saida_func)
 
 btn_adicionar_item_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
