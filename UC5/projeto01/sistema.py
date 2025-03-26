@@ -73,19 +73,19 @@ def itens_laterais_edit():
     for widget in scroll_frame_edit.winfo_children():
         widget.destroy()
 
+ 
+
 
 
     def marcar_unico_edit(produto_id):
-        
         for pid, checkbox in checkboxes.items():
-            if pid != produto_id:
+            if pid != produto_id and checkbox.winfo_exists():  
                 checkbox.deselect()
-                entry_nome_edit.delete(0, 'end')
-                entry_preco_edit.delete(0, 'end')
-                textbox_edit.delete('1.0', 'end')
+                entry_nome_edit.delete(0,'end')
+                entry_preco_edit.delete(0,'end')
+                textbox_edit.delete('1.0','end')
         preencher_campos_edit()
-
-        
+            
     for produto in produtos:
         produto_id, nome = produto
         var = IntVar()
@@ -130,10 +130,10 @@ def filtro_edit(event):
         
         for pid, checkbox in checkboxes.items():
             if pid != produto_id and checkbox.winfo_exists():
-                checkbox.deselect()
-                entry_nome_edit.delete(0, 'end')
-                entry_preco_edit.delete(0, 'end')
-                textbox_edit.delete('1.0', 'end') 
+                checkbox.deselect() 
+                entry_nome_edit.delete(0,'end')
+                entry_preco_edit.delete(0,'end')
+                textbox_edit.delete('1.0','end')
         preencher_campos_edit()
     
 
@@ -200,32 +200,29 @@ def salvar_alteraçao_edit():
     entry_nome_edit.delete(0,'end')
     entry_preco_edit.delete(0,'end')
     textbox_edit.delete('1.0','end')  
-
+    itens_laterais_edit()
 
 def excluir_edit(): 
-    global produto_selecionado_id
-    nome = entry_nome_edit.get().strip()
-    preco = entry_preco_edit.get().strip()
-    descricao = textbox_edit.get('1.0', 'end').strip()
+    global banco, cursor, checkboxes
 
-
-    sqlite3.connect('sistema_estoque.db')
+    # Conecta ao banco de dados
+    banco = sqlite3.connect('sistema_estoque.db')
     cursor = banco.cursor()
 
+    # Itera sobre os checkboxes para encontrar os selecionados
+    for produto_id, checkbox in checkboxes.items():
+        if checkbox.get() == 1:  # Verifica se o checkbox está selecionado
+            cursor.execute("DELETE FROM produtos WHERE id = ?", (produto_id,))
 
-
-
-    cursor.execute("DELETE FROM produtos WHERE nome = ?", (nome,))
-
-            
+    # Confirma as alterações no banco de dados
     banco.commit()
-    banco.close()  
+    banco.close()
 
-    entry_nome_edit.delete(0,'end')
-    entry_preco_edit.delete(0,'end')
-    textbox_edit.delete('1.0','end') 
-    itens_laterais_edit() 
-
+    # Limpa os campos de entrada e atualiza a lista de itens
+    entry_nome_edit.delete(0, 'end')
+    entry_preco_edit.delete(0, 'end')
+    textbox_edit.delete('1.0', 'end')
+    itens_laterais_edit()
 
 def cancelar_editar():
     entry_preco_edit.delete(0,'end')
@@ -379,7 +376,7 @@ def preencher_campos_saida():
     for produto_id, checkbox in checkboxes.items():
   
         if checkbox.get() == 1:
-            cursor.execute("SELECT nome FROM produtos WHERE id = ?", (produto_id,))
+            cursor.execute("SELECT nome, quantidade FROM produtos WHERE id = ?", (produto_id,))
             produto = cursor.fetchone()
 
             if produto:
@@ -389,7 +386,7 @@ def preencher_campos_saida():
                 entry_nome_prod_saida.configure(state='normal')
 
                 entry_nome_prod_saida.delete(0, 'end')
-                entry_nome_prod_saida.insert(0, produto[0])
+                entry_nome_prod_saida.insert(0, f"{produto[0]} - {produto[1]}")
                 entry_nome_prod_saida.configure(state='disabled')
 
 
@@ -410,6 +407,9 @@ def itens_laterais_saida():
     
     for widget in scroll_frame_edit.winfo_children():
         widget.destroy()
+
+ 
+
 
 
 
@@ -510,45 +510,57 @@ def filtro_saida(event):
 
 
 
-def delete_itens(linhas, botoes):
-     linhas.grid_forget()
-     botoes.grid_forget()
+def delete_itens(label, button, item):
+
+    if item in item_saida:
+        index = item_saida.index(item)
+        
+
+        del item_saida[index]
+        del quantidade_saida[index]
+    
+
+    label.grid_forget()
+    button.grid_forget()
+
+
 
 item_saida = []
 quantidade_saida  = []
 
-
 def adicionar_item_saida_func():
-
     global linha, quantidade_saida, item_saida
+
     entry_nome_prod_saida.configure(state='normal')
 
     item = entry_nome_prod_saida.get()
 
-
-    
     linha += 1
-  
-    print(item_saida)
-    
-    if item in item_saida:
-         pass
-    
 
-    else:
-        item_saida.append(entry_nome_prod_saida.get())
+    if item not in item_saida:
+        item_saida.append(item)
         quantidade_saida.append(entry_qntd_tirar_saida.get())
-        try :  
 
-            label = CTkLabel(scroll_frame_saida_prod, text=item, anchor="w")            
-            label.grid(row=linha, column=0, pady=5, padx=5)    
-            lixeira = CTkButton(scroll_frame_saida_prod, width=25, height=25, text="", image=image1, fg_color='#a399f9', hover_color='#6e67a6' ,command=lambda: delete_itens(label, lixeira),)
+        try:
+            label = CTkLabel(scroll_frame_saida_prod, text=item, anchor="w")
+            label.grid(row=linha, column=0, pady=5, padx=5)
+
+            lixeira = CTkButton(
+                scroll_frame_saida_prod, width=25, height=25, text="", 
+                image=image1, fg_color='#a399f9', hover_color='#6e67a6', 
+                command=lambda: delete_itens(label, lixeira, item)
+            )
             lixeira.grid(row=linha, column=1, pady=5, padx=100, sticky='e')
-            print('ok')
-  
+            print(item_saida)
+            print(quantidade_saida)
+
+
+
         except ValueError:
             return
-         
+        
+    entry_nome_prod_saida.configure(state='disabled')
+
 
 def preencher_campos_entrada():
     global produto_selecionado_id_entrada, banco, cursor
@@ -578,6 +590,7 @@ def preencher_campos_entrada():
 
 
     banco.close()
+
 
 def itens_laterais_entrada():
        
@@ -860,11 +873,7 @@ scroll_frame_saida_prod.grid(row= 3, column= 1)
 
 # butao
 
-
-
-
-btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=adicionar_item_saida_func)
-
+btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida_func)
 btn_adicionar_item_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
 btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black')
