@@ -202,6 +202,8 @@ def salvar_alteraçao_edit():
     textbox_edit.delete('1.0','end')  
     itens_laterais_edit()
 
+
+
 def excluir_edit(): 
     global banco, cursor, checkboxes
 
@@ -223,6 +225,8 @@ def excluir_edit():
     entry_preco_edit.delete(0, 'end')
     textbox_edit.delete('1.0', 'end')
     itens_laterais_edit()
+
+
 
 def cancelar_editar():
     entry_preco_edit.delete(0,'end')
@@ -405,7 +409,7 @@ def itens_laterais_saida():
     produtos = cursor.fetchall()
 
     
-    for widget in scroll_frame_edit.winfo_children():
+    for widget in scroll_frame_saida.winfo_children():
         widget.destroy()
 
  
@@ -562,6 +566,29 @@ def adicionar_item_saida_func():
     entry_nome_prod_saida.configure(state='disabled')
 
 
+def salvar_alteracao_saida():
+    global item_saida, quantidade_saida
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    
+    for item in item_saida:
+        nome = item
+        
+        
+        if item in item_saida:
+            index = item_saida.index(item)
+        
+
+            quantidade = quantidade_saida(index)
+
+            cursor.execute("UPDATE produtos SET quantidade = ? where nome = ? ", (quantidade, nome))
+        
+
+    banco.commit()
+    banco.close()
+
+ 
+
 def preencher_campos_entrada():
     global produto_selecionado_id_entrada, banco, cursor
 
@@ -601,7 +628,7 @@ def itens_laterais_entrada():
     produtos = cursor.fetchall()
 
     
-    for widget in scroll_frame_edit.winfo_children():
+    for widget in scroll_frame_entrada.winfo_children():
         widget.destroy()
 
  
@@ -876,7 +903,7 @@ scroll_frame_saida_prod.grid(row= 3, column= 1)
 btn_adicionar_item_saida = CTkButton(master= frame_saida, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black',command=adicionar_item_saida_func)
 btn_adicionar_item_saida.grid(row = 2, column= 1, sticky='e',pady=5) 
 
-btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black')
+btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black', command=salvar_alteracao_saida)
 btn_salvar_sair.grid(row = 5, column= 1, sticky='e')
 
 btn_salvar_cancelar_saida = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
