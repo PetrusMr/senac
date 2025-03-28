@@ -344,6 +344,25 @@ def carregar_estoque():
     banco.close()
 
 
+def carregar_saida():
+    # Conecta ao banco de dados
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    
+    # Limpa o Treeview antes de i
+    
+    # Consulta os dados da tabela 'produtos'
+    cursor.execute("SELECT nome, quantidade, preco, descricao FROM produtos")
+    produtos = cursor.fetchall()
+    
+    # Insere os dados no Treeview
+    for produto in produtos:
+        estoque_tree.insert('', 'end', values=produto,)
+    
+    # Fecha a conexão com o banco
+    banco.close()
+
+
 def switch_relatorio():
     frame_cadastrar.grid_forget()
     frame_editar.grid_forget()    
@@ -388,10 +407,14 @@ def preencher_campos_saida():
 
 
                 entry_nome_prod_saida.configure(state='normal')
+                entry_qntd_tirar_saida.configure(state='normal')
 
                 entry_nome_prod_saida.delete(0, 'end')
-                entry_nome_prod_saida.insert(0, f"{produto[0]} - {produto[1]}")
+                entry_nome_prod_saida.insert(0, f"{produto[0]} ")
+                entry_qntd_prod_saida.delete(0, 'end')
+                entry_qntd_prod_saida.insert(0, f"{produto[1]}")
                 entry_nome_prod_saida.configure(state='disabled')
+                entry_qntd_prod_saida.configure(state='disabled')
 
 
             break
@@ -422,6 +445,14 @@ def itens_laterais_saida():
         for pid, checkbox in checkboxes.items():
             if pid != produto_id:
                 checkbox.deselect()
+                entry_qntd_prod_saida.configure(state='normal')
+                entry_nome_prod_saida.configure(state='normal')
+                entry_qntd_prod_saida.delete(0,'end')
+                entry_nome_prod_saida.delete(0,'end')
+
+                entry_nome_prod_saida.configure(state='disabled')
+                
+
         preencher_campos_saida()
 
         
@@ -537,7 +568,7 @@ def adicionar_item_saida_func():
 
     entry_nome_prod_saida.configure(state='normal')
 
-    item = entry_nome_prod_saida.get()
+    item = entry_nome_prod_saida.get().split()
 
     linha += 1
 
@@ -562,35 +593,53 @@ def adicionar_item_saida_func():
 
         except ValueError:
             return
-        
-    entry_nome_prod_saida.configure(state='disabled')
 
+    entry_nome_prod_saida.configure(state='normal')
+    entry_qntd_prod_saida.configure (state='normal')
+
+    entry_nome_prod_saida.delete(0, 'end')
+    entry_qntd_tirar_saida.delete(0, 'end')
+    entry_qntd_prod_saida.delete(0, 'end')
+    
+    entry_nome_prod_saida.configure(state='disabled')
+    entry_qntd_prod_saida.configure(state='disabled')
 
 def salvar_alteracao_saida():
     global item_saida, quantidade_saida
+    
     banco = sqlite3.connect('sistema_estoque.db')
     cursor = banco.cursor()
     
-    for item in item_saida:
-        nome = item
-        
-        
-        if item in item_saida:
-            index = item_saida.index(item)
-        
+    for index, item in enumerate(item_saida):
+        item = str(item[0])
+        quantidade_atual = int(entry_qntd_prod_saida.get())
 
-            quantidade = quantidade_saida(index)
-
-            cursor.execute("UPDATE produtos SET quantidade = ? where nome = ? ", (quantidade, nome))
+        quantidade = int(quantidade_saida[index])
+        if quantidade > quantidade_atual or quantidade == 0:
+            return
+        else:
+            quantidade = quantidade_atual - quantidade
         
-
+            cursor.execute("UPDATE produtos SET quantidade = ? WHERE nome = ?", (quantidade, item))
+    
     banco.commit()
     banco.close()
 
- 
+def cancelar_saida():
+    for widget in scroll_frame_saida_prod.winfo_children():
+        widget.destroy()
+
+    item_saida.clear()
+    quantidade_saida.clear()
+
+item_entrada = []
+quantidade_entrada  = []
+
+linha_entrada = 0
+
 
 def preencher_campos_entrada():
-    global produto_selecionado_id_entrada, banco, cursor
+    global produto_selecionado_id_saida, banco, cursor
 
 
     banco = sqlite3.connect('sistema_estoque.db')
@@ -599,27 +648,30 @@ def preencher_campos_entrada():
     for produto_id, checkbox in checkboxes.items():
   
         if checkbox.get() == 1:
-            cursor.execute("SELECT nome FROM produtos WHERE id = ?", (produto_id,))
+            cursor.execute("SELECT nome, quantidade FROM produtos WHERE id = ?", (produto_id,))
             produto = cursor.fetchone()
 
             if produto:
-                produto_selecionado_id_entrada = produto_id
+                produto_selecionado_id_saida = produto_id
 
 
-                entry_NomeProd_entrada.configure(state='normal')
+                entry_nomeprod_entrada.configure(state='normal')
+                entry_qntd_tirar_entrada.configure(state='normal')
 
-                entry_NomeProd_entrada.delete(0, 'end')
-                entry_NomeProd_entrada.insert(0, produto[0])
-                entry_NomeProd_entrada.configure(state='disabled')
+                entry_nomeprod_entrada.delete(0, 'end')
+                entry_nomeprod_entrada.insert(0, f"{produto[0]} ")
+                entry_qntd_prod_entrada.delete(0, 'end')
+                entry_qntd_prod_entrada.insert(0, f"{produto[1]}")
+                entry_nomeprod_entrada.configure(state='disabled')
+                entry_qntd_prod_entrada.configure(state='disabled')
 
 
             break
 
 
-    banco.close()
-
 
 def itens_laterais_entrada():
+       
        
     global banco, cursor  
     banco = sqlite3.connect('sistema_estoque.db')
@@ -641,6 +693,9 @@ def itens_laterais_entrada():
         for pid, checkbox in checkboxes.items():
             if pid != produto_id:
                 checkbox.deselect()
+                entry_qntd_prod_entrada.configure(state='normal')
+                entry_qntd_prod_entrada.delete(0,'end')
+                
         preencher_campos_entrada()
 
         
@@ -662,6 +717,62 @@ def itens_laterais_entrada():
         checkbox.pack(pady=5, padx=10, fill="x")
         checkboxes[produto_id] = checkbox
 
+def delete_itens_entrada(label, button, item):
+
+    if item in item_saida:
+        index = item_saida.index(item)
+        
+
+        del item_saida[index]
+        del quantidade_saida[index]
+    
+
+    label.grid_forget()
+    button.grid_forget()
+
+
+
+def adicionar_item_entrada_func():
+    global linha_entrada, quantidade_entrada, item_entrada
+
+    entry_nomeprod_entrada.configure(state='normal')
+
+    item = entry_nomeprod_entrada.get().split()
+
+    linha_entrada += 1
+
+    if item not in item_entrada:
+        item_entrada.append(item)
+        quantidade_entrada.append(entry_qntd_tirar_entrada.get())
+
+        try:
+            label = CTkLabel(scroll_frame_entrada_prod, text=item, anchor="w")
+            label.grid(row=linha_entrada, column=0, pady=5, padx=5)
+
+            lixeira = CTkButton(
+                scroll_frame_entrada_prod, width=25, height=25, text="", 
+                image=image1, fg_color='#a399f9', hover_color='#6e67a6', 
+                command=lambda: delete_itens_entrada(label, lixeira, item)
+            )
+            lixeira.grid(row=linha_entrada, column=1, pady=5, padx=100, sticky='e')
+            print(item_entrada)
+            print(quantidade_entrada)
+
+
+
+        except ValueError:
+            return
+        
+    entry_qntd_prod_entrada.configure(state='normal')
+    
+    
+    entry_qntd_prod_entrada.delete(0, 'end')
+    entry_nomeprod_entrada.delete(0, 'end')
+    entry_qntd_tirar_entrada.delete(0, 'end')
+    
+    entry_qntd_prod_entrada.configure(state='disabled')
+    entry_nomeprod_entrada.configure(state='disabled')
+    
 
 def switch_entrada():
     frame_cadastrar.grid_forget()
@@ -731,8 +842,31 @@ def filtro_entrada(event):
 
     banco.close()
 
+def salvar_alteracao_entrada():
+    global item_entrada, quantidade_entrada
+    
+    banco = sqlite3.connect('sistema_estoque.db')
+    cursor = banco.cursor()
+    
+    for index, item in enumerate(item_entrada):
+        item = str(item[0])
+        quantidade_atual = int(entry_qntd_prod_entrada.get())
 
+        quantidade = int(quantidade_entrada[index])
 
+        quantidade = quantidade_atual + quantidade
+        
+        cursor.execute("UPDATE produtos SET quantidade = ? WHERE nome = ?", (quantidade, item))
+    
+    banco.commit()
+    banco.close()
+
+def cancelar_entrada():
+    for widget in scroll_frame_entrada_prod.winfo_children():
+        widget.destroy()
+
+    item_entrada.clear()
+    quantidade_entrada.clear()
 
 
 
@@ -890,8 +1024,14 @@ entry_buscar_saida.bind("<KeyRelease>", filtro_saida)
 entry_nome_prod_saida = CTkEntry(master=frame_saida, border_color='#a399f9', corner_radius=32 )
 entry_nome_prod_saida.grid(row = 1, column = 1, sticky = 'w', padx = 5)
 
+entry_qntd_prod_saida = CTkEntry(master=frame_saida, border_color='#a399f9', corner_radius=32, width=80,)
+entry_qntd_prod_saida.grid(row = 1, column = 1, sticky = 'e', padx = 5)
+
+
 entry_qntd_tirar_saida = CTkEntry(master=frame_saida, placeholder_text='Qtnd para -', width=120, border_color='#a399f9', corner_radius=32)
 entry_qntd_tirar_saida.grid(row = 2, column = 1, sticky = 'w', padx=5)
+
+
 
 
 scroll_frame_saida_prod = CTkScrollableFrame(master= frame_saida, border_color='#a399f9', border_width=2,scrollbar_fg_color='#6e67a6', scrollbar_button_color='#a399f9', scrollbar_button_hover_color='#544a78',)
@@ -906,7 +1046,7 @@ btn_adicionar_item_saida.grid(row = 2, column= 1, sticky='e',pady=5)
 btn_salvar_sair = CTkButton(master=frame_saida, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black', command=salvar_alteracao_saida)
 btn_salvar_sair.grid(row = 5, column= 1, sticky='e')
 
-btn_salvar_cancelar_saida = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+btn_salvar_cancelar_saida = CTkButton(master=frame_saida, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=cancelar_saida)
 btn_salvar_cancelar_saida.grid(row = 5, column= 1, sticky='w', pady=5)
 
 
@@ -927,8 +1067,11 @@ entry_buscar_entrada = CTkEntry(master=frame_entrada,width=219, placeholder_text
 entry_buscar_entrada.grid(row= 1, column = 0, padx = 20, sticky = 'w')
 entry_buscar_entrada.bind("<KeyRelease>", filtro_entrada)
 
-entry_NomeProd_entrada = CTkEntry(master=frame_entrada, state= 'disabled', border_color='#a399f9', corner_radius=32 )
-entry_NomeProd_entrada.grid(row = 1, column = 1, sticky = 'w', padx=5)
+entry_nomeprod_entrada = CTkEntry(master=frame_entrada, state= 'disabled', border_color='#a399f9', corner_radius=32 )
+entry_nomeprod_entrada.grid(row = 1, column = 1, sticky = 'w', padx=5)
+
+entry_qntd_prod_entrada = CTkEntry(master=frame_entrada, border_color='#a399f9', corner_radius=32, width=80,)
+entry_qntd_prod_entrada.grid(row = 1, column = 1, sticky = 'e', padx = 5)
 
 entry_qntd_tirar_entrada = CTkEntry(master=frame_entrada, placeholder_text='Qtnd para +', width=120, border_color='#a399f9', corner_radius=32)
 entry_qntd_tirar_entrada.grid(row = 2, column = 1, sticky = 'w', padx= 5)
@@ -942,13 +1085,13 @@ scroll_frame_entrada_prod.grid(row= 3, column= 1)
 
 # butao
 
-btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+btn_adicionarItem_entrada = CTkButton(master= frame_entrada, text='Adicionar Item', width=90, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=adicionar_item_entrada_func)
 btn_adicionarItem_entrada.grid(row = 2, column= 1, sticky='e',pady=5,) 
 
-btn_salvar_entrada = CTkButton(master=frame_entrada, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black')
+btn_salvar_entrada = CTkButton(master=frame_entrada, text='salvar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=salvar_alteracao_entrada)
 btn_salvar_entrada.grid(row = 5, column= 1, sticky='e')
 
-btn_salvar_cancelar_entrada = CTkButton(master=frame_entrada, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black' )
+btn_salvar_cancelar_entrada = CTkButton(master=frame_entrada, text='cancelar',width=50, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6',text_color='black', command=cancelar_entrada) 
 btn_salvar_cancelar_entrada.grid(row = 5, column= 1, sticky='w', pady=5, padx=5)
 
 
@@ -1027,7 +1170,6 @@ btn_entrada_relatorio.grid(row = 3, column= 1,pady=5, padx=80  )
 
 btn_saida_relatorio = CTkButton(master=frame_relatorio, text='Saida', width=70, fg_color="#8684EB", corner_radius=32, hover_color='#6e67a6', text_color='black', command=switch_saida_relatorio)
 btn_saida_relatorio.grid(row = 3, column= 1,pady=5,sticky='e',  )
-
 
 
 
