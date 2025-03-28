@@ -594,15 +594,15 @@ def adicionar_item_saida_func():
         except ValueError:
             return
 
-    entry_nome_prod_saida.configure(state='normal')
-    entry_qntd_prod_saida.configure (state='normal')
+    # entry_nome_prod_saida.configure(state='normal')
+    # entry_qntd_prod_saida.configure (state='normal')
 
-    entry_nome_prod_saida.delete(0, 'end')
-    entry_qntd_tirar_saida.delete(0, 'end')
-    entry_qntd_prod_saida.delete(0, 'end')
+    # entry_nome_prod_saida.delete(0, 'end')
+    # entry_qntd_tirar_saida.delete(0, 'end')
+    # entry_qntd_prod_saida.delete(0, 'end')
     
-    entry_nome_prod_saida.configure(state='disabled')
-    entry_qntd_prod_saida.configure(state='disabled')
+    # entry_nome_prod_saida.configure(state='disabled')
+    # entry_qntd_prod_saida.configure(state='disabled')
 
 def salvar_alteracao_saida():
     global item_saida, quantidade_saida
@@ -624,6 +624,8 @@ def salvar_alteracao_saida():
     
     banco.commit()
     banco.close()
+    item_saida.clear()
+    quantidade_saida.clear()
 
 def cancelar_saida():
     for widget in scroll_frame_saida_prod.winfo_children():
@@ -766,12 +768,12 @@ def adicionar_item_entrada_func():
     entry_qntd_prod_entrada.configure(state='normal')
     
     
-    entry_qntd_prod_entrada.delete(0, 'end')
-    entry_nomeprod_entrada.delete(0, 'end')
-    entry_qntd_tirar_entrada.delete(0, 'end')
+    # entry_qntd_prod_entrada.delete(0, 'end')
+    # entry_nomeprod_entrada.delete(0, 'end')
+    # entry_qntd_tirar_entrada.delete(0, 'end')
     
-    entry_qntd_prod_entrada.configure(state='disabled')
-    entry_nomeprod_entrada.configure(state='disabled')
+    # entry_qntd_prod_entrada.configure(state='disabled')
+    # entry_nomeprod_entrada.configure(state='disabled')
     
 
 def switch_entrada():
@@ -860,6 +862,8 @@ def salvar_alteracao_entrada():
     
     banco.commit()
     banco.close()
+    item_entrada.clear()
+    quantidade_entrada.clear()
 
 def cancelar_entrada():
     for widget in scroll_frame_entrada_prod.winfo_children():
